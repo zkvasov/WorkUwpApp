@@ -21,10 +21,9 @@
                     Margin="10" 
                     Command="{Binding ChooseBtnClicked}"/>
 
-            <!--<TextBlock Text="{Binding FolderName, Mode=TwoWay}"
-                       FontSize="20"
-                       Margin="10"/>-->
-
+            <!--<Button Content="Run BgTask"
+                    Margin="10" 
+                    Command="{Binding RunBgTaskClicked}"/>-->
 
         </StackPanel>
         

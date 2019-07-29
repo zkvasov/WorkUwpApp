@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap mp rescap">
   <Identity Name="3bfd6e95-b4a4-4261-9b7d-3444ad2e4d42" Publisher="CN=Eugene" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="3bfd6e95-b4a4-4261-9b7d-3444ad2e4d42" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
@@ -31,5 +31,8 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
+    <uap:Capability Name="picturesLibrary" />
+    <!--<rescap:Capability Name="extendedBackgroundTaskTime"/>
+    <rescap:Capability Name="broadFileSystemAccess" />-->
   </Capabilities>
 </Package>

@@ -9,8 +9,9 @@ namespace WorkUwpApp
 {
     class MainViewModel: ObservableObject
     {
-        private DesktopLoader desktopLoader_ = null;
+        //private DesktopLoader desktopLoader_ = null;
         private string folderName_ = null;
+        private LauncherBgTask launcher = null;
 
         public string FolderName
         {
@@ -32,9 +33,27 @@ namespace WorkUwpApp
 
         public void OpenFolder()
         {
-            desktopLoader_ = new DesktopLoader();
-            desktopLoader_.OpenFolder();
-            //FolderName = desktopLoader_.FolderName;
+            //DesktopLoader.GetFolderWithImages();
+
+            launcher = new LauncherBgTask();
+            launcher.GetFolderWithImages();
+            //launcher.LaunhBgTask();
         }
+
+        //public ICommand RunBgTaskClicked
+        //{
+        //    get
+        //    {
+        //        return new DelegateCommand(RunBgTask);
+        //    }
+        //}
+
+        //public void RunBgTask()
+        //{
+        //    if (launcher != null)
+        //    {
+        //        launcher.RunByAppTrigger();
+        //    }
+        //}
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -12,7 +13,7 @@ namespace WorkUwpApp
 {
     public class DesktopLoader/* : ObservableObject*/
     {
-       // public ObservableCollection<string> selectedImages = new ObservableCollection<string>();
+        // public ObservableCollection<string> selectedImages = new ObservableCollection<string>();
 
         //public string FolderName { get; private set; }
 
@@ -28,23 +29,29 @@ namespace WorkUwpApp
         //    }
         //}
 
-        public async Task SetDesktopBackground(StorageFile file)
+        public static async Task SetDesktopBackground(StorageFile file)
         {
             if (UserProfilePersonalizationSettings.IsSupported())
             {
-                //StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/Geometry.jpg"));
-                // файл из приложения не может быть установлен в качестве заставки, поэтому копируем его в локальную папку
-                StorageFile localFile = await file.CopyAsync(ApplicationData.Current.LocalFolder, file.Name/*"Geometry.jpg"*/,
-                                                                                         NameCollisionOption.ReplaceExisting);
+                Debug.WriteLine("start setting BG");
+
+                StorageFile localFile = await file.CopyAsync(ApplicationData.Current.LocalFolder, file.Name,
+                                                                                         NameCollisionOption.ReplaceExisting);  /*сейчас тут вылетает*/
+                Debug.WriteLine("after start");
 
                 UserProfilePersonalizationSettings settings = UserProfilePersonalizationSettings.Current;
+                Debug.WriteLine("between");
+
                 bool isSuccess = await settings.TrySetWallpaperImageAsync(localFile);
+                Debug.WriteLine("before BG");
+
                 await Task.Delay(3000);
                 //Thread.Sleep(3000);
+                Debug.WriteLine("finish setting BG");
             }
         }
 
-        public async void OpenFolder()
+        public static async void GetFolderWithImages()
         {
             var folderPicker = new Windows.Storage.Pickers.FolderPicker();
             folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
@@ -53,11 +60,14 @@ namespace WorkUwpApp
             folderPicker.FileTypeFilter.Add(".png");
 
             StorageFolder folder = await folderPicker.PickSingleFolderAsync();
-            
+            //StorageFolder folder2 = await StorageFolder.GetFolderFromPathAsync(folder.Path);
+            var fileList = await folder.GetFilesAsync();
             if (folder != null)
             {
-                IReadOnlyList<StorageFile> fileList = await folder.GetFilesAsync();
-                
+                // ApplicationData.Current.LocalSettings.Values["path"] = folder.Path;
+
+                //IReadOnlyList<StorageFile> fileList = await folder.GetFilesAsync();
+
                 foreach (StorageFile file in fileList)
                 {
                     await SetDesktopBackground(file);
@@ -69,8 +79,7 @@ namespace WorkUwpApp
                 //FutureAccessList.AddOrReplace("PickedFolderToken", folder);
                 //FolderName = folder.Name;
             }
-            
-        }
 
+        }
     }
 }
