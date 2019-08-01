@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
-using Windows.UI.Core;
-using Windows.UI.Xaml;
 
 namespace WorkUwpApp
 {
@@ -18,7 +13,7 @@ namespace WorkUwpApp
         private BackgroundTaskBuilder taskBuilder = null;
         private ApplicationTrigger appTrigger = null;
 
-        public async void LaunhBgTask()
+        private async void LaunhBgTask()
         {
             var taskList = BackgroundTaskRegistration.AllTasks.Values;
             var task = taskList.FirstOrDefault(i => i.Name == taskName);
@@ -26,14 +21,6 @@ namespace WorkUwpApp
             {
                 task.Unregister(true);
             }
-            
-            //DesktopLoader.GetFolderWithImages();                         // set path to folder in ApplicationData.Current.LocalSettings
-            taskBuilder = new BackgroundTaskBuilder();
-            taskBuilder.Name = taskName;
-            taskBuilder.TaskEntryPoint = typeof(RuntimeComponentForDesktop.DesktopBackgroundTask).ToString();
-
-            appTrigger = new ApplicationTrigger();
-            taskBuilder.SetTrigger(appTrigger);
 
             var access = await BackgroundExecutionManager.RequestAccessAsync();
 
@@ -43,23 +30,28 @@ namespace WorkUwpApp
                 return;
             }
 
-            task = taskBuilder.Register();
+            taskBuilder = new BackgroundTaskBuilder
+            {
+                Name = taskName,
+                TaskEntryPoint = typeof(RuntimeComponentForDesktop.DesktopBackgroundTask).ToString()
+            };
 
-            // task.Progress += new BackgroundTaskProgressEventHandler(Task_Progress);
+            appTrigger = new ApplicationTrigger();
+            taskBuilder.SetTrigger(appTrigger);
+            
+            task = taskBuilder.Register();
+            
             task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
 
             await appTrigger.RequestAsync();
         }
 
-        //public async void RunByAppTrigger()
-        //{
-        //    await appTrigger.RequestAsync();
-        //}
-
         public async void GetFolderWithImages()
         {
-            var folderPicker = new Windows.Storage.Pickers.FolderPicker();
-            folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
+            var folderPicker = new Windows.Storage.Pickers.FolderPicker
+            {
+                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop
+            };
             folderPicker.FileTypeFilter.Add(".jpg");
             folderPicker.FileTypeFilter.Add(".jpeg");
             folderPicker.FileTypeFilter.Add(".png");
@@ -68,10 +60,7 @@ namespace WorkUwpApp
 
             if (folder != null)
             {
-                //var storageItemAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList;
-                //storageItemAccessList.Add(folder);
                 var storageItemAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(folder, folder.Name);
-                ////ApplicationData.Current.LocalSettings.Values["path"] = folder.Path;
                 ApplicationData.Current.LocalSettings.Values["storageItemAccessList"] = storageItemAccessList;
                 //Application now has read/ write access to all contents in the picked folder
                 // (including other sub - folder contents)
@@ -79,15 +68,6 @@ namespace WorkUwpApp
                 FutureAccessList.AddOrReplace("PickedFolderToken", folder);
 
                 LaunhBgTask();
-
-                //IReadOnlyList<StorageFile> fileList = await folder.GetFilesAsync();
-
-                //foreach (StorageFile file in fileList)
-                //{
-                //    await SetDesktopBackground(file);
-                //}
-
-                
             }
 
         }
@@ -101,9 +81,9 @@ namespace WorkUwpApp
                 task.Unregister(true);
             }
 
-            Debug.WriteLine(string.Format("Background task completed at {0}", DateTime.Now.TimeOfDay));
+            Debug.WriteLine(message: "Background task completed at " + DateTime.Now.TimeOfDay);
 
-            // ApplicationData.Current.LocalSettings.Values.Clear();
+            //ApplicationData.Current.LocalSettings.Values.Clear();
             //ApplicationData.Current.LocalSettings.Values.Values.Clear();
             //ApplicationData.Current.LocalSettings.DeleteContainer("path");
         }

@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace WorkUwpApp
@@ -22,6 +12,8 @@ namespace WorkUwpApp
     /// </summary>
     sealed partial class App : Application
     {
+
+        //Application app;
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -30,7 +22,10 @@ namespace WorkUwpApp
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            //this.LeavingBackground += OnLeavingBackGround;
         }
+
+        
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
@@ -40,7 +35,7 @@ namespace WorkUwpApp
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
-
+            
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
             if (rootFrame == null)
@@ -50,7 +45,9 @@ namespace WorkUwpApp
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
+#pragma warning disable CA1062 // Validate arguments of public methods
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+#pragma warning restore CA1062 // Validate arguments of public methods
                 {
                     //TODO: Load state from previously suspended application
                 }
@@ -94,6 +91,7 @@ namespace WorkUwpApp
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
+            
             deferral.Complete();
         }
     }
