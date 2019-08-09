@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace WorkUwpApp
 {
-    class DelegateCommand : ICommand
+    public sealed class DelegateCommand : ICommand
     {
         private SimpleEventHandler handler;
         private bool isEnabled = true;

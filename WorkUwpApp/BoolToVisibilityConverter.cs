@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Data;
 
 namespace WorkUwpApp
 {
-    class BoolToVisibilityConverter:IValueConverter
+    class BoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

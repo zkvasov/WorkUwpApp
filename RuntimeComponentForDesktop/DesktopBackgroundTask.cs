@@ -12,12 +12,19 @@ namespace RuntimeComponentForDesktop
 {
     public sealed class DesktopBackgroundTask : IBackgroundTask
     {
-        CancellationTokenSource cancel = new CancellationTokenSource();
+
+        private const string _containerName = "imagesContainer";
+        private const string _imageSetting = "image";
+        private const string _intervalSetting = "interval";
+
+
+        readonly CancellationTokenSource cancel = new CancellationTokenSource();
         volatile bool _cancelRequested = false; // прервана ли задача
 
         private List<StorageFile> _imageFiles;
+        private int _interval;
         
-        public async void Run(IBackgroundTaskInstance taskInstance)
+        public void Run(IBackgroundTaskInstance taskInstance)
         {
             Debug.WriteLine(taskInstance.Task.Name);
             //оценка стоимости выполнения задачи для приложения
@@ -34,9 +41,42 @@ namespace RuntimeComponentForDesktop
             };
 
             BackgroundTaskDeferral _deferral = taskInstance.GetDeferral();
-            await LoadBgImage();
+            GetDataFromSettings();
+            //await LoadBgImage();
             //SetFromResources();
             _deferral.Complete();
+        }
+
+        private async void GetDataFromSettings()
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+            int seconds = (int)localSettings.Values[_intervalSetting];
+            if (seconds >= 3 && seconds <= 30)
+            {
+                _interval = seconds * 1000;
+            }
+
+            bool hasContainer = localSettings.Containers.ContainsKey(_containerName);
+            if (hasContainer)
+            {
+                _imageFiles = new List<StorageFile>();
+                int count = 0;
+                foreach(var token in localSettings.Containers[_containerName].Values)
+                {
+                    string fileKey = _imageSetting + count.ToString();
+                    if (localSettings.Containers[_containerName].Values.ContainsKey(fileKey))
+                    {
+                        string tokenFile = (string)localSettings.Containers[_containerName].Values[fileKey];
+                        StorageFile file = await StorageApplicationPermissions.FutureAccessList.GetFileAsync(tokenFile);
+                        if (file != null)
+                        {
+                            _imageFiles.Add(file);
+                        }
+                    }
+                    count++;
+                }
+                FolderHandling(_imageFiles);
+            }
         }
 
         private async Task GetFilesInFolder(StorageFolder folder)
@@ -55,43 +95,38 @@ namespace RuntimeComponentForDesktop
             }
         }
 
-        private async Task LoadBgImage()
-        {
-            // получаем локальные настройки приложения
-            var settings = ApplicationData.Current.LocalSettings;
-            string accsessFolder = (string)settings.Values["storageItemAccessList"];
 
-            if (accsessFolder != null)
-            {
-                StorageFolder folder = await StorageApplicationPermissions.FutureAccessList.GetFolderAsync(accsessFolder);
-                if (folder != null)
-                {
-                    _imageFiles = new List<StorageFile>();
-                    await GetFilesInFolder(folder);
-                    try
-                    {
-                        FolderHandling(_imageFiles);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e.ToString());
-                    }
+        //private async Task LoadBgImage()
+        //{
+        //    // получаем локальные настройки приложения
+        //    var settings = ApplicationData.Current.LocalSettings;
+        //    int seconds = (int)settings.Values["interval"];
+        //    if (seconds >= 3 && seconds <= 30)
+        //    {
+        //        _interval = seconds * 1000;
+        //    }
+        //    string accsessFolder = (string)settings.Values["storageItemAccessList"];
 
-                    //IReadOnlyList<StorageFile> imageFiles = null;
-                    //////////////////////////////////
-                    //try
-                    //{
-                    //    imageFiles = await folder.GetFilesAsync();
-                    //    FolderHandling(imageFiles);
-                    //}
-                    //catch (Exception e)
-                    //{
-
-                    //}
-                }
-            }
-            settings.Values.Remove("storageItemAccessList");
-        }
+        //    if (accsessFolder != null)
+        //    {
+        //        StorageFolder folder = await StorageApplicationPermissions.FutureAccessList.GetFolderAsync(accsessFolder);
+        //        if (folder != null)
+        //        {
+        //            _imageFiles = new List<StorageFile>();
+        //            await GetFilesInFolder(folder);
+        //            try
+        //            {
+        //                FolderHandling(_imageFiles);
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                Debug.WriteLine(e.ToString());
+        //            }
+        //        }
+        //    }
+        //   //settings.Values.Remove("storageItemAccessList");
+        //   //settings.Values.Remove("interval");
+        //}
 
         private void FolderHandling(IReadOnlyList<StorageFile> imageFiles)
         {
@@ -106,8 +141,8 @@ namespace RuntimeComponentForDesktop
                 }
 
                 SetDesktopBackground(imageFiles[i]);
-                //await Task.Delay(3000);
-                Thread.Sleep(3000);                    //интервал между загрузкой изображений
+                //await Task.Delay(_interval);
+                Thread.Sleep(_interval);                    //интервал между загрузкой изображений
                 i++;
             }
         }

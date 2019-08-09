@@ -13,13 +13,13 @@ namespace WorkUwpApp
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        //private bool _isNameNeeded = true;
+        private bool _isSelected = false;
 
-        //public bool IsNameNeeded
-        //{
-        //    get { return _isNameNeeded; }
-        //    set { Set(ref _isNameNeeded, value); }
-        //}
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set { Set(ref _isSelected, value); }
+        }
 
         protected bool Set<T>(
              ref T field,

@@ -13,7 +13,7 @@ namespace WorkUwpApp
         private BackgroundTaskBuilder taskBuilder = null;
         private ApplicationTrigger appTrigger = null;
 
-        private async void LaunhBgTask()
+        public async void LaunhBgTask()
         {
             var taskList = BackgroundTaskRegistration.AllTasks.Values;
             var task = taskList.FirstOrDefault(i => i.Name == taskName);

@@ -12,7 +12,7 @@ namespace WorkUwpApp
         public MainPage()
         {
             this.InitializeComponent();
-        } 
+        }
     }
     
 }
