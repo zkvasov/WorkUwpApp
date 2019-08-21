@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Windows.Storage;
+using WorkUwpApp.ViewModels.Helpers;
 
-namespace WorkUwpApp
+namespace WorkUwpApp.Models
 {
-    internal class ImagesCollection
+    public class ImagesCollection : ObservableObject
     {
         //to do
         private List<StorageFile> _images;

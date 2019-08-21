@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace WorkUwpApp
+namespace WorkUwpApp.ViewModels.Behaviors
 {
     public class MultiSelectBehavior : Behavior<ListViewBase>
     {
@@ -61,7 +61,7 @@ namespace WorkUwpApp
             }
             _selectionChangedInProgress = false;
         }
-
+        //sender
         private static void PropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
             NotifyCollectionChangedEventHandler handler = (s, e) => SelectedItemsChanged(sender, e);
@@ -76,13 +76,17 @@ namespace WorkUwpApp
             }
         }
 
+        //TODO
+        //
         private static void SelectedItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (sender is MultiSelectBehavior)
+            if (sender != null && sender is MultiSelectBehavior)   //adding "sender != null &&"
             {
-                var listViewBase = (sender as MultiSelectBehavior).AssociatedObject;
+                //var listViewBase = (sender as MultiSelectBehavior).AssociatedObject;
+                //var listSelectedItems = listViewBase.SelectedItems;
 
-                var listSelectedItems = listViewBase.SelectedItems;
+                //null after second call of page
+                var listSelectedItems = (sender as MultiSelectBehavior).AssociatedObject.SelectedItems;  
                 if (e.OldItems != null)
                 {
                     foreach (var item in e.OldItems)
@@ -104,6 +108,8 @@ namespace WorkUwpApp
                         }
                     }
                 }
+
+
             }
         }
     }

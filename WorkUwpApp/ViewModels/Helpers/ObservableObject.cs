@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace WorkUwpApp
+namespace WorkUwpApp.ViewModels.Helpers
 {
     public class ObservableObject : INotifyPropertyChanged
     {

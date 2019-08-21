@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using WorkUwpApp.ViewModels.Helpers;
 
-namespace WorkUwpApp
+namespace WorkUwpApp.Models
 {
-    class IconImage : ObservableObject
+    public class IconImage : ObservableObject
     {
         public string Name { get; private set; }
         public ImageSource ImgSource { get; private set; }
@@ -15,14 +18,19 @@ namespace WorkUwpApp
 
         public IconImage(StorageFile file)
         {
+            //GC.AddMemoryPressure(10 * 1024 * 1024);
             Name = file.Name;
             //SetPath();
             SetPath(file);
             File = file;
         }
 
+        //~IconImage()
+        //{
+        //    GC.RemoveMemoryPressure(10 * 1024 * 1024);
+        //}
 
-        private async void SetPath(StorageFile file)
+        private async void SetPath(StorageFile file) //problem is here
         {
 
             //StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Images/Geometry.jpg"));
@@ -32,18 +40,18 @@ namespace WorkUwpApp
             //    image.SetSource(fileStream);
             //    ImgSource = image;
             //}
-
+            
             using (var randomAccessStream = await file.OpenAsync(FileAccessMode.Read))
             {
-                var bitmapImage = new BitmapImage();
-                //bitmapImage.UriSource = new Uri(file.Path);
-                bitmapImage.DecodePixelWidth = 100;
-                //StorageItemThumbnail imgThumbnail = await file.GetThumbnailAsync(
-                //    ThumbnailMode.PicturesView, 100, ThumbnailOptions.ResizeThumbnail);
-                //bitmapImage.SetSource(imgThumbnail);
-                bitmapImage.SetSource(randomAccessStream);
-                //await bitmapImage.SetSourceAsync(randomAccessStream);
-                ImgSource = bitmapImage;
+                 var bitmapImage = new BitmapImage();
+                 //bitmapImage.UriSource = new Uri(file.Path);
+                 bitmapImage.DecodePixelWidth = 100;
+                 //StorageItemThumbnail imgThumbnail = await file.GetThumbnailAsync(
+                 //    ThumbnailMode.PicturesView, 100, ThumbnailOptions.ResizeThumbnail);
+                 //bitmapImage.SetSource(imgThumbnail);
+                 bitmapImage.SetSource(randomAccessStream);
+                 //bitmapImage.SetSourceAsync(randomAccessStream);
+                 ImgSource = bitmapImage;
             }
         }
     }

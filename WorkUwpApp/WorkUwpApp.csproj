@@ -135,19 +135,32 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BoolToVisibilityConverter.cs" />
-    <Compile Include="ComplexCommand.cs" />
-    <Compile Include="DelegateCommand.cs" />
-    <Compile Include="MultiSelectBehavior.cs" />
-    <Compile Include="IconImage.cs" />
-    <Compile Include="LauncherBgTask.cs" />
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="Interfaces\INavigable.cs" />
+    <Compile Include="ViewModels\ResettableVmLocator.cs" />
+    <Compile Include="ViewModels\Scenario1ViewModel.cs" />
+    <Compile Include="ViewModels\Scenario2ViewModel.cs" />
+    <Compile Include="ViewModels\Scenario3ViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
+    <Compile Include="Views\Helpers\BindablePage.cs" />
+    <Compile Include="Views\Scenario1_CreateCollection.xaml.cs">
+      <DependentUpon>Scenario1_CreateCollection.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainViewModel.cs" />
-    <Compile Include="ObservableObject.cs" />
+    <Compile Include="Views\Scenario2_CollectionEditor.xaml.cs">
+      <DependentUpon>Scenario2_CollectionEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Scenario3_CollectionsList.xaml.cs">
+      <DependentUpon>Scenario3_CollectionsList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\Behaviors\MultiSelectBehavior.cs" />
+    <Compile Include="ViewModels\Helpers\BoolToVisibilityConverter.cs" />
+    <Compile Include="ViewModels\Helpers\ComplexCommand.cs" />
+    <Compile Include="ViewModels\Helpers\DelegateCommand.cs" />
+    <Compile Include="Models\IconImage.cs" />
+    <Compile Include="ViewModels\Helpers\LauncherBgTask.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\Helpers\ObservableObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ImagesCollection.cs" />
+    <Compile Include="Models\ImagesCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -173,12 +186,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Views\Scenario1_CreateCollection.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Scenario2_CollectionEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Scenario3_CollectionsList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommonServiceLocator">
+      <Version>2.0.4</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.4</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -189,6 +213,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
       <Version>2.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="MvvmLight">
+      <Version>5.4.1.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

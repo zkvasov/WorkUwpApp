@@ -1,0 +1,115 @@
+﻿<Page
+    x:Class="WorkUwpApp.Views.Scenario1_CreateCollection"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WorkUwpApp.Views"
+    xmlns:vmm="using:WorkUwpApp.ViewModels"
+    xmlns:model="using:WorkUwpApp.Models"
+    xmlns:custombehaviors ="using:WorkUwpApp.ViewModels.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    mc:Ignorable="d"
+    
+    DataContext="{Binding Scenario1Instance, Source={StaticResource Locator}}" 
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <!--<Page.DataContext>
+        <vmm:MainViewModel/>
+    </Page.DataContext>-->
+    <Page.Resources>
+        <!--<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>-->
+        <DataTemplate x:Key="CollectionTemplate" 
+              x:DataType="model:ImagesCollection">
+            <TextBlock Text="{x:Bind Name}" 
+                       Margin="10, 5, 0, 5"/>
+        </DataTemplate>
+        <DataTemplate x:Key="IconsTemplate"
+                      x:DataType="model:IconImage">
+            <StackPanel>
+                <Image Source="{Binding ImgSource}"
+                       Height="100"
+                       Width="140"
+                       Stretch="UniformToFill"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+                <TextBlock Text="{x:Bind Name}" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="170"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="250"/>
+        </Grid.ColumnDefinitions>
+
+        <Button Grid.Column="0" Grid.Row="0"
+                Content="Choose folder with images"
+                HorizontalAlignment="Center"
+                Margin="10" 
+                Command="{Binding ChooseFolderClicked}"/>
+        <GridView Grid.Column="0" Grid.Row="1"
+                  x:Name="ImagesOfPickedFolder"
+                  ItemsSource="{Binding Icons, Mode=TwoWay}"
+                  SelectionMode="Multiple"
+                  Width="500">
+            <Interactivity:Interaction.Behaviors>
+                <custombehaviors:MultiSelectBehavior SelectedItems="{Binding SelectedImages, Mode=TwoWay}">
+
+                </custombehaviors:MultiSelectBehavior>
+            </Interactivity:Interaction.Behaviors>
+            <GridView.ItemTemplate>
+                <DataTemplate   
+                      x:DataType="model:IconImage">
+                    <Grid Width="120"
+                              Height="100">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Image Source="{x:Bind ImgSource, Mode=OneTime}"
+                                   Stretch="UniformToFill"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Grid.Row="0"/>
+                        <TextBlock Text="{x:Bind Name, Mode=OneTime}" 
+                                       HorizontalAlignment="Center"
+                                       Grid.Row="1"/>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+
+
+        <Button Grid.Column="0" Grid.Row="2"
+                Content="Add images to selected collection"
+                HorizontalAlignment="Center"
+                Margin="10"
+                CommandParameter="{Binding ElementName=ImagesOfPickedFolder}"
+                Command="{Binding AddImagesClicked}"/>
+        <StackPanel Grid.Column="1" Grid.Row="1">
+            
+            <TextBox Text="{Binding NameNewCollection, Mode=TwoWay}"/>
+            <Button Content="Create collection"
+                    HorizontalAlignment="Center"
+                    Margin="10"
+                    Command="{Binding CreateNewCollectionClicked}"/>
+            <Button Content="Add collection to list"
+                    HorizontalAlignment="Center"
+                    Margin="10"
+                    Command="{Binding AddCollectionClicked}"/>
+            <Button Content="Cancel"
+                    HorizontalAlignment="Center"
+                    Margin="10"
+                    Command="{Binding CancelClicked}"/>
+        </StackPanel>
+        
+    </Grid>
+</Page>

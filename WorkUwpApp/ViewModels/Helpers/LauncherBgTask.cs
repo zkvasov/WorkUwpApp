@@ -4,7 +4,7 @@ using System.Linq;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 
-namespace WorkUwpApp
+namespace WorkUwpApp.ViewModels.Helpers
 {
     public class LauncherBgTask
     {
@@ -46,31 +46,31 @@ namespace WorkUwpApp
             await appTrigger.RequestAsync();
         }
 
-        public async void GetFolderWithImages()
-        {
-            var folderPicker = new Windows.Storage.Pickers.FolderPicker
-            {
-                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop
-            };
-            folderPicker.FileTypeFilter.Add(".jpg");
-            folderPicker.FileTypeFilter.Add(".jpeg");
-            folderPicker.FileTypeFilter.Add(".png");
+        //public async void GetFolderWithImages()
+        //{
+        //    var folderPicker = new Windows.Storage.Pickers.FolderPicker
+        //    {
+        //        SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop
+        //    };
+        //    folderPicker.FileTypeFilter.Add(".jpg");
+        //    folderPicker.FileTypeFilter.Add(".jpeg");
+        //    folderPicker.FileTypeFilter.Add(".png");
 
-            StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+        //    StorageFolder folder = await folderPicker.PickSingleFolderAsync();
 
-            if (folder != null)
-            {
-                var storageItemAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(folder, folder.Name);
-                ApplicationData.Current.LocalSettings.Values["storageItemAccessList"] = storageItemAccessList;
-                //Application now has read/ write access to all contents in the picked folder
-                // (including other sub - folder contents)
-                Windows.Storage.AccessCache.StorageApplicationPermissions.
-                FutureAccessList.AddOrReplace("PickedFolderToken", folder);
+        //    if (folder != null)
+        //    {
+        //        var storageItemAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(folder, folder.Name);
+        //        ApplicationData.Current.LocalSettings.Values["storageItemAccessList"] = storageItemAccessList;
+        //        //Application now has read/ write access to all contents in the picked folder
+        //        // (including other sub - folder contents)
+        //        Windows.Storage.AccessCache.StorageApplicationPermissions.
+        //        FutureAccessList.AddOrReplace("PickedFolderToken", folder);
 
-                LaunhBgTask();
-            }
+        //        LaunhBgTask();
+        //    }
 
-        }
+        //}
 
         private void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
         {

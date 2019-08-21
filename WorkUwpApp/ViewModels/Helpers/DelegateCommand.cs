@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace WorkUwpApp
+namespace WorkUwpApp.ViewModels.Helpers
 {
     public sealed class DelegateCommand : ICommand
     {

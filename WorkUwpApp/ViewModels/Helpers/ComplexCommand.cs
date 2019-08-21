@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace WorkUwpApp
+namespace WorkUwpApp.ViewModels.Helpers
 {
     public class ComplexCommand : ICommand 
     {
@@ -29,6 +30,8 @@ namespace WorkUwpApp
 
         public void Execute(object parameter) => this._execute(parameter);
 
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate",
+            Justification = "This cannot be an event")]
         public void RaiseCanExecuteChanged(string propertyName)
         {
             this.CanExecuteChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
