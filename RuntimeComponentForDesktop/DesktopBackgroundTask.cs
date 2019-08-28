@@ -51,7 +51,7 @@ namespace RuntimeComponentForDesktop
         {
             var localSettings = ApplicationData.Current.LocalSettings;
             int seconds = (int)localSettings.Values[_intervalSetting];
-            if (seconds >= 3 && seconds <= 30)
+            if (seconds >= 1)
             {
                 _interval = seconds * 1000;
             }

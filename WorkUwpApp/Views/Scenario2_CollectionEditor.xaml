@@ -1,8 +1,9 @@
-﻿<Page
+﻿<common:BindablePage
     x:Class="WorkUwpApp.Views.Scenario2_CollectionEditor"
      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WorkUwpApp.Views"
+    xmlns:common="using:WorkUwpApp.Views.Helpers"
     xmlns:vmm="using:WorkUwpApp.ViewModels"
     xmlns:model="using:WorkUwpApp.Models"
     xmlns:custombehaviors ="using:WorkUwpApp.ViewModels.Behaviors"
@@ -20,6 +21,8 @@
     </Page.DataContext>-->
     <Page.Resources>
         <!--<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>-->
+        <converters:SelectedItemsToListConverter xmlns:converters ="using:WorkUwpApp.ViewModels.Converters" x:Key="SelectedItemsToListConverter"/>
+
         <DataTemplate x:Key="CollectionTemplate" 
               x:DataType="model:ImagesCollection">
             <TextBlock Text="{x:Bind Name}" 
@@ -51,26 +54,28 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" Grid.Row="0">
-            <TextBlock Text="SelectedCollection"
+            <TextBlock Text="{Binding Collection.Name, Mode=OneWay}"
                        Margin="10,10,0,0"/>
 
             <Button  Content="Choose folder with images"
                      HorizontalAlignment="Center"
                      Margin="10" 
-                     Command="{Binding ChooseBtnClicked}"/>
+                     Command="{Binding ChooseFolderClicked}"/>
                 
         </StackPanel>
         
         
         <GridView Grid.Column="0" Grid.Row="1"
                   x:Name="ImagesOfPickedFolder"
-                  ItemsSource="{Binding Icons, Mode=OneTime}"
+                  ItemsSource="{Binding ImagesToAdd, Mode=OneTime}"
                   SelectionMode="Multiple"
                   Width="500">
             <Interactivity:Interaction.Behaviors>
-                <custombehaviors:MultiSelectBehavior SelectedItems="{Binding SelectedImages, Mode=TwoWay}">
-
-                </custombehaviors:MultiSelectBehavior>
+                <Core:EventTriggerBehavior EventName="SelectionChanged">
+                    <Core:InvokeCommandAction Command="{Binding SelectionChangedToAddCommand}" 
+                                              InputConverter="{StaticResource SelectedItemsToListConverter}" 
+                                              InputConverterParameter="{Binding ElementName=ImagesOfPickedFolder}"/>
+                </Core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
             <GridView.ItemTemplate>
                 <DataTemplate   
@@ -96,30 +101,40 @@
 
 
         <Button Grid.Column="0" Grid.Row="2"
-                Content="Add images to current ciollection"
-                IsEnabled="{Binding IsSelectedCollection, Mode=OneWay}"
+                Content="Add images to collection"
                 HorizontalAlignment="Center"
                 Margin="10"
                 Command="{Binding AddImagesClicked}"/>
 
-        <Button Grid.Column="1" Grid.Row="0"
-                         Content="Return to list"
-                         HorizontalAlignment="Center"
-                         Margin="10"
-                Command="{Binding ReturnToListClicked}"/>
+        <StackPanel Grid.Column="1" Grid.Row="0"
+                    Orientation="Horizontal" >
+            <TextBlock VerticalAlignment="Center">Edit name:</TextBlock>
+            <TextBox Text="{Binding NameCollection, Mode=TwoWay}"
+                     Width="150"
+                     Margin="10"/>
+            <Button Content="Return to list"
+                    HorizontalAlignment="Right"
+                    Margin="10"
+                    Command="{Binding ReturnToListCommand}"/>
+            <Button Content="Cancel"
+                    HorizontalAlignment="Right"
+                    Margin="10"
+                    Command="{Binding CancelClicked}"/>
+        </StackPanel>
         
-        
-        <!---->
-            
 
         <GridView Grid.Column="1" Grid.Row="1"
-                  x:Name="Currentimages"
-                  ItemsSource="{Binding Icons, Mode=OneTime}"
+                  x:Name="CurrentCollectionImages"
+                  ItemsSource="{Binding CurrentImages, Mode=TwoWay}"
                   SelectionMode="Multiple"
                   Width="500"
                   Background="LightBlue">
             <Interactivity:Interaction.Behaviors>
-                <custombehaviors:MultiSelectBehavior SelectedItems="{Binding SelectedImages, Mode=TwoWay}"/>
+                <Core:EventTriggerBehavior EventName="SelectionChanged">
+                    <Core:InvokeCommandAction Command="{Binding SelectionChangedCurrentCommand}" 
+                                              InputConverter="{StaticResource SelectedItemsToListConverter}" 
+                                              InputConverterParameter="{Binding ElementName=CurrentCollectionImages}"/>
+                </Core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
             <GridView.ItemTemplate>
                 <DataTemplate   
@@ -145,10 +160,9 @@
 
         <Button Grid.Column="1" Grid.Row="2"
                 Content="Remove selected images"
-                IsEnabled="{Binding IsSelectedCollection, Mode=OneWay}"
                 HorizontalAlignment="Center"
                 Margin="10"
-                Command="{Binding AddImagesClicked}"/>
+                Command="{Binding RemoveImagesClicked}"/>
 
     </Grid>
-</Page>
+</common:BindablePage>

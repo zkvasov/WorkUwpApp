@@ -21,7 +21,7 @@ namespace WorkUwpApp.Models
         //}
         public List<StorageFile> Images => _images;
         
-        public string Name { get; private set; }
+        public string Name { get; set; }
         //public StorageFolder StorageFolder { get; private set; }
 
         public void AddImage(StorageFile image)

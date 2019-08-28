@@ -4,11 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WorkUwpApp.Views"
     xmlns:common="using:WorkUwpApp.Views.Helpers"
+    xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
     xmlns:vmm="using:WorkUwpApp.ViewModels"
     xmlns:model="using:WorkUwpApp.Models"
     xmlns:custombehaviors ="using:WorkUwpApp.ViewModels.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters ="using:WorkUwpApp.ViewModels.Converters"
+    xmlns:controls="using:WinUX.Xaml.Controls.Validation"
+    xmlns:rules="using:WinUX.Data.Validation.Rules"
+    xmlns:validation="using:WinUX.Data.Validation"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
@@ -17,55 +22,46 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
 
-    <!--<Page.DataContext>
-        <vmm:MainViewModel/>
-    </Page.DataContext>-->
 
-    <!--<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <TextBlock Name="Title"  
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center" 
-                   Text="{Binding Title}" 
-                   FontFamily="Segoe UI Historic" />
-        <Button Grid.Row="1" Name="Navigate" 
-                Command="{Binding NavigateCommand}" 
-                Content="Edit collection"  
-                VerticalAlignment="Center" 
-                HorizontalAlignment="Center" />
 
-    </Grid>-->
-    
-    
     <Page.Resources>
-        <DataTemplate x:Key="CollectionTemplate" 
-              x:DataType="model:ImagesCollection">
-            <TextBlock Text="{x:Bind Name}" 
-                       Margin="10, 5, 0, 5"/>
-        </DataTemplate>
-        <DataTemplate x:Key="IconsTemplate"
-                      x:DataType="model:IconImage">
-            <StackPanel>
-                <Image Source="{Binding ImgSource}"
-                       Height="100"
-                       Width="140"
-                       Stretch="UniformToFill"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
-                <TextBlock Text="{x:Bind Name}" HorizontalAlignment="Center"/>
-            </StackPanel>
-        </DataTemplate>
+        <converters:NullableValueConverter  x:Key="NullableValueConverter"/>
+        <converters:NegativeBoolToVisibilityConverter  x:Key="NegativeBoolToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
 
+        <Grid.Resources>
+            <DataTemplate x:Key="CollectionTemplate" 
+              x:DataType="model:ImagesCollection">
+                <TextBlock Text="{x:Bind Name}" 
+                       Margin="10, 5, 0, 5"/>
+            </DataTemplate>
+            <DataTemplate x:Key="IconsTemplate"
+                      x:DataType="model:IconImage">
+                <StackPanel>
+                    <Image Source="{Binding ImgSource}"
+                       Height="100"
+                       Width="140"
+                       Stretch="UniformToFill"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+                    <TextBlock Text="{x:Bind Name}" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </DataTemplate>
+            
+            <!--<validation:ValidationRules x:Key="IsPositive">
+                <validation:ValidationRules.Rules>
+                    <rules:IntValidationRules/>
+                </validation:ValidationRules.Rules>
+            </validation:ValidationRules>-->
+        </Grid.Resources>
+        
         <ListBox x:Name="CollectionsList" 
                  Grid.Column="0" 
                  SelectedItem="{Binding SelectedCollection, Mode=TwoWay}"
@@ -74,7 +70,7 @@
                  Margin="5"
                  Width="200"/>
 
-        
+
 
         <StackPanel Grid.Column="1">
             <Button Content="Add new collection"
@@ -99,15 +95,32 @@
                     Margin="10"
                     Command="{Binding PlayInBgClicked}"/>
 
-            <TextBlock HorizontalAlignment="Center">Set interval (seconds)</TextBlock>
+            <TextBox Name="IntervalTextBox"
+                     Text="{Binding SelectedInterval, Mode=TwoWay, Converter={StaticResource NullableValueConverter} }"
+                     Header="Set interval (seconds):"
+                     Margin="10,0,10,0"
+                     extensions:TextBoxRegex.Regex="^[1-9]\d*$"
+                      />
 
-            <Slider Width="150" 
+            <TextBlock Text="Interval must be positive integer!"
+                       Foreground="Red"
+                       Margin="0,0,10,0"
+                       HorizontalAlignment="Right"
+                       Visibility="{Binding Path=(extensions:TextBoxRegex.IsValid), ElementName=IntervalTextBox, Converter={StaticResource NegativeBoolToVisibilityConverter} }"/>
+            <!--<TextBlock Text="{Binding Errors[SelectedInterval][0]}"
+                       Foreground="Red"
+                       HorizontalAlignment="Right"
+                       Margin="10,0,10,0"/>-->
+
+            
+
+            <!--<Slider Width="150" 
                     Minimum="3" 
                     Maximum="30" 
                     StepFrequency="1"
                     SmallChange="1" 
                     LargeChange="5" 
-                    Value="{Binding SelectedInterval, Mode=TwoWay}" />
+                    Value="{Binding SelectedInterval, Mode=TwoWay}" />-->
         </StackPanel>
 
     </Grid>

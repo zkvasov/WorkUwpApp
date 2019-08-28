@@ -11,6 +11,7 @@ using Windows.Storage;
 using WorkUwpApp.Models;
 using WorkUwpApp.ViewModels.Helpers;
 using WorkUwpApp.Interfaces;
+using WorkUwpApp.Views;
 
 namespace WorkUwpApp.ViewModels
 {
@@ -19,6 +20,9 @@ namespace WorkUwpApp.ViewModels
         private readonly INavigationService _navigationService;
         private const string _containerName = "imagesContainer";
         private const string _imageSetting = "image";
+        private const string _intervalSetting = "interval";
+
+        private string _sourcePageTypeFrom;
         private LauncherBgTask _launcher;
         private ImagesCollection _selectedCollection;
         private int _selectedInterval = 5;
@@ -84,6 +88,7 @@ namespace WorkUwpApp.ViewModels
             }
         }
         public bool IsSelectedCollection => SelectedCollection != null;
+
         public int SelectedInterval
         {
             get => _selectedInterval;
@@ -117,6 +122,10 @@ namespace WorkUwpApp.ViewModels
             //FutureAccessList.AddOrReplace("PickedFolderToken", SelectedCollection.StorageFolder);
 
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            //TO DO
+            localSettings.Values[_intervalSetting] = SelectedInterval;
+            //
+            localSettings.DeleteContainer(_containerName);
             localSettings.CreateContainer(
                 _containerName, ApplicationDataCreateDisposition.Always);
             if (localSettings.Containers.ContainsKey(_containerName))
@@ -130,15 +139,31 @@ namespace WorkUwpApp.ViewModels
                     count++;
                 }
             }
-
             _launcher.LaunhBgTask();
         }
 
+
+        public void OnNavigatedFrom(object sourceType)
+        {
+            if(sourceType is string)
+            {
+                _sourcePageTypeFrom = (string)sourceType;
+            }
+        }
         public void OnNavigatedTo(object parameter)
         {
             if (parameter is ImagesCollection)
             {
-                Collections.Add((ImagesCollection)parameter);
+                if (_sourcePageTypeFrom is "Scenario1_CreateCollection")
+                {
+                    Collections.Add((ImagesCollection)parameter);
+                }
+                if (_sourcePageTypeFrom is "Scenario2_CollectionEditor")
+                {
+                    int index = Collections.IndexOf(SelectedCollection);
+                    Collections.RemoveAt(index);
+                    Collections.Insert(index, (ImagesCollection)parameter);
+                }
             }
         }
     }

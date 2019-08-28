@@ -86,7 +86,7 @@ namespace WorkUwpApp.ViewModels.Behaviors
                 //var listSelectedItems = listViewBase.SelectedItems;
 
                 //null after second call of page
-                var listSelectedItems = (sender as MultiSelectBehavior).AssociatedObject.SelectedItems;  
+                var listSelectedItems = (sender as MultiSelectBehavior).AssociatedObject.SelectedItems;
                 if (e.OldItems != null)
                 {
                     foreach (var item in e.OldItems)
@@ -108,6 +108,9 @@ namespace WorkUwpApp.ViewModels.Behaviors
                         }
                     }
                 }
+
+
+
 
 
             }

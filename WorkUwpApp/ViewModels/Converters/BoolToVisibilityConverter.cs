@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace WorkUwpApp.ViewModels.Helpers
+namespace WorkUwpApp.ViewModels.Converters
 {
     public class BoolToVisibilityConverter : IValueConverter
     {

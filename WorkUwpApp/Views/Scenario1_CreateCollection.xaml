@@ -19,6 +19,8 @@
         <vmm:MainViewModel/>
     </Page.DataContext>-->
     <Page.Resources>
+        <converters:SelectedItemsToListConverter xmlns:converters ="using:WorkUwpApp.ViewModels.Converters" x:Key="SelectedItemsToListConverter"/>
+
         <!--<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>-->
         <DataTemplate x:Key="CollectionTemplate" 
               x:DataType="model:ImagesCollection">
@@ -55,16 +57,35 @@
                 HorizontalAlignment="Center"
                 Margin="10" 
                 Command="{Binding ChooseFolderClicked}"/>
+        
         <GridView Grid.Column="0" Grid.Row="1"
                   x:Name="ImagesOfPickedFolder"
                   ItemsSource="{Binding Icons, Mode=TwoWay}"
                   SelectionMode="Multiple"
                   Width="500">
+
+
             <Interactivity:Interaction.Behaviors>
+                <Core:EventTriggerBehavior EventName="SelectionChanged">
+                    <Core:InvokeCommandAction Command="{Binding SelectionChangedCommand}" 
+                                              InputConverter="{StaticResource SelectedItemsToListConverter}" 
+                                              InputConverterParameter="{Binding ElementName=ImagesOfPickedFolder}"/>
+                </Core:EventTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+            
+            <!--<Interactivity:Interaction.Behaviors>
+            <Core:EventTriggerBehavior EventName="SelectionChanged">   
+                <Core:InvokeCommandAction Command="{Binding AddImagesCommand}"
+                                          CommandParameter="{Binding ElementName=ImagesOfPickedFolder, Path=SelectedItem}"/>
+                </Core:EventTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>-->
+            
+            <!--<Interactivity:Interaction.Behaviors>
                 <custombehaviors:MultiSelectBehavior SelectedItems="{Binding SelectedImages, Mode=TwoWay}">
 
                 </custombehaviors:MultiSelectBehavior>
-            </Interactivity:Interaction.Behaviors>
+            </Interactivity:Interaction.Behaviors>-->
+            
             <GridView.ItemTemplate>
                 <DataTemplate   
                       x:DataType="model:IconImage">
@@ -74,6 +95,7 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
+                        
                         <Image Source="{x:Bind ImgSource, Mode=OneTime}"
                                    Stretch="UniformToFill"
                                    VerticalAlignment="Center"
@@ -89,9 +111,10 @@
 
 
         <Button Grid.Column="0" Grid.Row="2"
-                Content="Add images to selected collection"
+                Content="Add images to new collection"
                 HorizontalAlignment="Center"
                 Margin="10"
+                IsEnabled="{Binding IsCollectionCreated, Mode=OneWay}"
                 CommandParameter="{Binding ElementName=ImagesOfPickedFolder}"
                 Command="{Binding AddImagesClicked}"/>
         <StackPanel Grid.Column="1" Grid.Row="1">
@@ -102,6 +125,7 @@
                     Margin="10"
                     Command="{Binding CreateNewCollectionClicked}"/>
             <Button Content="Add collection to list"
+                    IsEnabled="{Binding IsCollectionCreated, Mode=OneWay}"
                     HorizontalAlignment="Center"
                     Margin="10"
                     Command="{Binding AddCollectionClicked}"/>

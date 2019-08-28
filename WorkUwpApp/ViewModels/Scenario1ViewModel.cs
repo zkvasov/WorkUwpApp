@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 using WorkUwpApp.Models;
+using WorkUwpApp.ViewModels.Helpers;
 
 namespace WorkUwpApp.ViewModels
 {
@@ -19,30 +20,46 @@ namespace WorkUwpApp.ViewModels
         private readonly INavigationService _navigationService;
         private ImagesCollection _collection;
         private bool _isLoading = false;
-        private bool _isCollectionCreated = false;
         private string _nameNewCollection = "New collection";
-
+        private List<IconImage> _selectedItems;
 
         public ObservableCollection<IconImage> Icons { get; private set; }
-        public ObservableCollection<object> SelectedImages { get; private set; }
+        //public ObservableCollection<object> SelectedImages { get; private set; }
+        public ObservableCollection<IconImage> SelectedImages { get; private set; }
 
         public RelayCommand ChooseFolderClicked { get; private set; }
         public RelayCommand AddImagesClicked { get; private set; }
+        //public ComplexCommand AddImagesCommand { get; private set; }
+
         public RelayCommand CreateNewCollectionClicked { get; private set; }
         public RelayCommand AddCollectionClicked { get; private set; }
         public RelayCommand CancelClicked { get; private set; }
 
+        RelayCommand<List<IconImage>> _selectionChangedCommand;
+        public RelayCommand<List<IconImage>> SelectionChangedCommand
+           => _selectionChangedCommand ?? (_selectionChangedCommand = new RelayCommand<List<IconImage>>((l) =>
+           {
+               if (l != null)
+                   SelectedImages.Clear();
+                   foreach (var item in l)
+                   {
+                       SelectedImages.Add(item);
+                   }
+           }, (l) => true));
 
 
         public Scenario1ViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
+            _selectedItems = new List<IconImage>();
             Icons = new ObservableCollection<IconImage>();
-            SelectedImages = new ObservableCollection<object>();
+            SelectedImages = new ObservableCollection<IconImage>();
+
             ChooseFolderClicked = new RelayCommand(OpenFolder);
             AddImagesClicked = new RelayCommand(AddImages);
             CreateNewCollectionClicked = new RelayCommand(CreateNewCollection);
             AddCollectionClicked = new RelayCommand(AddCollectionToList);
+            //AddImagesCommand = new ComplexCommand(new Action<object>(AddSelectedImages));
             CancelClicked = new RelayCommand(Cancel);
         }
 
@@ -72,18 +89,7 @@ namespace WorkUwpApp.ViewModels
                 RaisePropertyChanged(nameof(IsCollectionCreated));
             }
         }
-        public bool IsCollectionCreated
-        {
-            get
-            {
-                return _isCollectionCreated;
-            }
-            set
-            {
-                _isCollectionCreated = value;
-                RaisePropertyChanged(nameof(IsCollectionCreated));
-            }
-        }
+        public bool IsCollectionCreated => Collection != null;
         private async void OpenFolder()
         {
             var folderPicker = new Windows.Storage.Pickers.FolderPicker
@@ -138,6 +144,18 @@ namespace WorkUwpApp.ViewModels
                 Collection.AddImage(image.File);
             }
         }
+
+        //private void AddSelectedImages(object parameter)
+        //{
+        //    var item = (IconImage)parameter;
+        //    _selectedItems.Add(item);
+
+        //    //List<IconImage> items = (List<IconImage>)parameter;
+        //    //foreach (var item in items)
+        //    //{
+        //    //    _selectedItems.Add(item);
+        //    //}
+        //}
         private void CreateNewCollection()
         {
             Collection = new ImagesCollection(NameNewCollection);
@@ -147,30 +165,23 @@ namespace WorkUwpApp.ViewModels
             //Cleanup();
 
             _navigationService.NavigateTo("Scenario3_CollectionsList", Collection);
-           //ClearAll();
+           ClearAll();
         }
         private void Cancel()
         {
             //Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
 
-            Cleanup();
+            //Cleanup();
             _navigationService.GoBack();
 
-            //ClearAll();
+            ClearAll();
         }
         private void ClearAll()
         {
             _nameNewCollection = "New collection";
-            _isCollectionCreated = false;
             SelectedImages.Clear();
             Icons.Clear();
             Collection = null;
-        }
-
-        public override void Cleanup()
-        {
-            Messenger.Default.Unregister<Scenario1ViewModel>(this);
-            base.Cleanup();
         }
     }
 }

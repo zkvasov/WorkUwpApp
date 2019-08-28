@@ -12,13 +12,27 @@ namespace WorkUwpApp.Views.Helpers
 {
     public class BindablePage : Page
     {
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
+            base.OnNavigatedFrom(e);
 
             var navigableViewModel = this.DataContext as INavigable;
             if (navigableViewModel != null)
             {
+                //navigableViewModel.OnNavigatedTo(e.Parameter);
+
+                navigableViewModel.OnNavigatedFrom(e.SourcePageType.Name);
+            }
+        }
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            
+            var navigableViewModel = this.DataContext as INavigable;
+            if (navigableViewModel != null)
+            {
+                //navigableViewModel.OnNavigatedTo(e.Parameter);
+                
                 navigableViewModel.OnNavigatedTo(e.Parameter);
             }
         }

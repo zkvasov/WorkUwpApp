@@ -59,7 +59,7 @@
 
 //        //public ObservableCollection<ImagesCollection> Collections { get; } = new ObservableCollection<ImagesCollection>();
 //        //public ObservableCollection<IconImage> Icons { get; } = new ObservableCollection<IconImage>();
-//       //public ObservableCollection<object> SelectedImages { get; } = new ObservableCollection<object>();
+//        //public ObservableCollection<object> SelectedImages { get; } = new ObservableCollection<object>();
 
 //        //public System.Collections.IList SelectedItems    
 //        //{

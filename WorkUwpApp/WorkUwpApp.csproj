@@ -136,11 +136,14 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\INavigable.cs" />
-    <Compile Include="ViewModels\ResettableVmLocator.cs" />
+    <Compile Include="ViewModels\Converters\NegativeBoolToVisibilityConverter.cs" />
+    <Compile Include="ViewModels\Converters\NullableValueConverter.cs" />
+    <Compile Include="ViewModels\Converters\SelectedItemsToListConverter.cs" />
     <Compile Include="ViewModels\Scenario1ViewModel.cs" />
     <Compile Include="ViewModels\Scenario2ViewModel.cs" />
     <Compile Include="ViewModels\Scenario3ViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
+    <Compile Include="Views\CustomControls\ValidatingTextBox.cs" />
     <Compile Include="Views\Helpers\BindablePage.cs" />
     <Compile Include="Views\Scenario1_CreateCollection.xaml.cs">
       <DependentUpon>Scenario1_CreateCollection.xaml</DependentUpon>
@@ -152,7 +155,7 @@
       <DependentUpon>Scenario3_CollectionsList.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Behaviors\MultiSelectBehavior.cs" />
-    <Compile Include="ViewModels\Helpers\BoolToVisibilityConverter.cs" />
+    <Compile Include="ViewModels\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="ViewModels\Helpers\ComplexCommand.cs" />
     <Compile Include="ViewModels\Helpers\DelegateCommand.cs" />
     <Compile Include="Models\IconImage.cs" />
@@ -211,11 +214,17 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.8</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI">
+      <Version>5.1.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
       <Version>2.0.1</Version>
     </PackageReference>
     <PackageReference Include="MvvmLight">
       <Version>5.4.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="WinUX.UWP">
+      <Version>2.4.17005.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
