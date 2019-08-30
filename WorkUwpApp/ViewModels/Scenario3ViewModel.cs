@@ -21,13 +21,13 @@ namespace WorkUwpApp.ViewModels
         private const string _containerName = "imagesContainer";
         private const string _imageSetting = "image";
         private const string _intervalSetting = "interval";
+        private const string _containerChangedSetting = "containerChangedSetting";
 
-        private string _sourcePageTypeFrom;
+        //private string _sourcePageTypeFrom;
         private LauncherBgTask _launcher;
         private ImagesCollection _selectedCollection;
         private int _selectedInterval = 5;
         private bool _isLoading = false;
-        private string _title;
         public ObservableCollection<ImagesCollection> Collections { get; }
 
         public RelayCommand AddNewCollectionClicked { get; private set; }
@@ -36,13 +36,11 @@ namespace WorkUwpApp.ViewModels
         public RelayCommand PlayInBgClicked { get; private set; }
 
         
-
         public Scenario3ViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
             _launcher = new LauncherBgTask();
             Collections = new ObservableCollection<ImagesCollection>();
-            Title = "Image collections";
             AddNewCollectionClicked = new RelayCommand(AddNewCollection);
             EditCollectionClicked = new RelayCommand(EditCollection);
             RemoveCollectionClicked = new RelayCommand(RemoveCollection);
@@ -60,22 +58,6 @@ namespace WorkUwpApp.ViewModels
                 _isLoading = value;
                 RaisePropertyChanged(nameof(IsLoading));
 
-            }
-        }
-        public string Title //unnecessary
-        {
-
-            get
-            {
-                return _title;
-            }
-            set
-            {
-                if (value != _title)
-                {
-                    _title = value;
-                    RaisePropertyChanged(nameof(Title));
-                }
             }
         }
         public ImagesCollection SelectedCollection
@@ -108,6 +90,7 @@ namespace WorkUwpApp.ViewModels
         }
         private void RemoveCollection()
         {
+            App.Collections.Remove(SelectedCollection);
             Collections.Remove(SelectedCollection);
         }
         private void PlayInBg()
@@ -139,31 +122,53 @@ namespace WorkUwpApp.ViewModels
                     count++;
                 }
             }
+
             _launcher.LaunhBgTask();
         }
 
 
         public void OnNavigatedFrom(object sourceType)
         {
-            if(sourceType is string)
+            if (sourceType is string)
             {
-                _sourcePageTypeFrom = (string)sourceType;
+                App.typeNameCurrentPage = (string)sourceType;
             }
         }
         public void OnNavigatedTo(object parameter)
         {
-            if (parameter is ImagesCollection)
+            if (App.typeNameCurrentPage == "Scenario3_CollectionsList" && App.Collections.Count > 1)
             {
-                if (_sourcePageTypeFrom is "Scenario1_CreateCollection")
+                this.Collections.Clear();
+                foreach (var item in App.Collections)
                 {
-                    Collections.Add((ImagesCollection)parameter);
+                    this.Collections.Add(item);
                 }
-                if (_sourcePageTypeFrom is "Scenario2_CollectionEditor")
+            }
+            else if (parameter is ImagesCollection collection)
+            {
+                if (App.typeNameCurrentPage == "Scenario1_CreateCollection")
                 {
-                    int index = Collections.IndexOf(SelectedCollection);
-                    Collections.RemoveAt(index);
-                    Collections.Insert(index, (ImagesCollection)parameter);
+                    Collections.Add(collection);
+                    App.Collections.Add(collection);
                 }
+                else if (App.typeNameCurrentPage == "Scenario2_CollectionEditor")
+                {
+                    if (SelectedCollection != null)
+                    {
+                        int index = Collections.IndexOf(SelectedCollection);
+                        Collections.RemoveAt(index);
+                        Collections.Insert(index, collection);
+                        App.InsertCollection(index, collection);
+                    }
+                    else if(App.Collections.Count == 1)
+                    {
+                        Collections.Add(App.Collections[0]);
+                    }
+                }
+            }
+            else if (App.typeNameCurrentPage == "Scenario2_CollectionEditor" && App.Collections.Count == 1)
+            {
+                Collections.Add(App.Collections[0]);
             }
         }
     }

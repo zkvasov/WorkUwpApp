@@ -19,11 +19,11 @@ namespace RuntimeComponentForDesktop
 
 
         readonly CancellationTokenSource cancel = new CancellationTokenSource();
-        volatile bool _cancelRequested = false; // прервана ли задача
-
+        volatile bool _cancelRequested = false;   // прервана ли задача
+         
         private List<StorageFile> _imageFiles;
-        private int _interval;
-        
+        private int _interval;    //интервал между загрузкой изображений
+
         public void Run(IBackgroundTaskInstance taskInstance)
         {
             Debug.WriteLine(taskInstance.Task.Name);
@@ -79,21 +79,21 @@ namespace RuntimeComponentForDesktop
             }
         }
 
-        private async Task GetFilesInFolder(StorageFolder folder)
-        {
-            var items = await folder.GetItemsAsync();
-            foreach (var item in items)
-            {
-                if (item is StorageFile)
-                {
-                    _imageFiles.Add((StorageFile)item);
-                }
-                else
-                {
-                    await GetFilesInFolder((StorageFolder)item);
-                }
-            }
-        }
+        //private async Task GetFilesInFolder(StorageFolder folder)
+        //{
+        //    var items = await folder.GetItemsAsync();
+        //    foreach (var item in items)
+        //    {
+        //        if (item is StorageFile)
+        //        {
+        //            _imageFiles.Add((StorageFile)item);
+        //        }
+        //        else
+        //        {
+        //            await GetFilesInFolder((StorageFolder)item);
+        //        }
+        //    }
+        //}
 
 
         //private async Task LoadBgImage()
@@ -131,10 +131,11 @@ namespace RuntimeComponentForDesktop
         private void FolderHandling(IReadOnlyList<StorageFile> imageFiles)
         {
 
-            //бесконечно в кольцевом порядке
+            //бесконечно  как в кольцевом списке
             int i = 0;
             while (!_cancelRequested)       //если задача прервана, выходим из цикла
             {
+                
                 if (i >= imageFiles.Count)
                 {
                     i = 0;
@@ -155,7 +156,7 @@ namespace RuntimeComponentForDesktop
                 var outer = Task.Factory.StartNew(async() =>      // внешняя задача
                 {
                     StorageFile localFile = await file.CopyAsync(ApplicationData.Current.LocalFolder, file.Name,
-                                                                                             NameCollisionOption.ReplaceExisting); 
+                                                                                     NameCollisionOption.ReplaceExisting); 
                     var inner = Task.Factory.StartNew(async () =>  // вложенная задача
                     {
                         UserProfilePersonalizationSettings settings = UserProfilePersonalizationSettings.Current;

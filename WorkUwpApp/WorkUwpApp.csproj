@@ -143,7 +143,6 @@
     <Compile Include="ViewModels\Scenario2ViewModel.cs" />
     <Compile Include="ViewModels\Scenario3ViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
-    <Compile Include="Views\CustomControls\ValidatingTextBox.cs" />
     <Compile Include="Views\Helpers\BindablePage.cs" />
     <Compile Include="Views\Scenario1_CreateCollection.xaml.cs">
       <DependentUpon>Scenario1_CreateCollection.xaml</DependentUpon>
@@ -222,6 +221,9 @@
     </PackageReference>
     <PackageReference Include="MvvmLight">
       <Version>5.4.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.2</Version>
     </PackageReference>
     <PackageReference Include="WinUX.UWP">
       <Version>2.4.17005.1</Version>

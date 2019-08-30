@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Views;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -194,7 +195,6 @@ namespace WorkUwpApp.ViewModels
         private void Cancel()
         {
             _navigationService.NavigateTo("Scenario3_CollectionsList");
-
             ClearAll();
         }
         private void ClearAll()
@@ -225,5 +225,7 @@ namespace WorkUwpApp.ViewModels
                 Collection.Images.Add(image.File);
             }
         }
+
+        
     }
 }

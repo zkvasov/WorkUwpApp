@@ -9,41 +9,62 @@ namespace WorkUwpApp.ViewModels.Helpers
     public class LauncherBgTask
     {
         private const string taskName = "bgImage";
-
-        private BackgroundTaskBuilder taskBuilder = null;
-        private ApplicationTrigger appTrigger = null;
+        private bool _isLaunched = false;
 
         public async void LaunhBgTask()
         {
+            if (_isLaunched)
+            {
+                return;
+            }
             var taskList = BackgroundTaskRegistration.AllTasks.Values;
             var task = taskList.FirstOrDefault(i => i.Name == taskName);
             if (task != null)
             {
-                task.Unregister(true);
+                ((BackgroundTaskRegistration)task).Unregister(true);
             }
 
+            
             var access = await BackgroundExecutionManager.RequestAccessAsync();
-
             //abort if access isn't granted
             if (access == BackgroundAccessStatus.DeniedBySystemPolicy)
             {
                 return;
             }
 
-            taskBuilder = new BackgroundTaskBuilder
+            BackgroundTaskBuilder taskBuilder = new BackgroundTaskBuilder
             {
                 Name = taskName,
                 TaskEntryPoint = typeof(RuntimeComponentForDesktop.DesktopBackgroundTask).ToString()
             };
 
-            appTrigger = new ApplicationTrigger();
+            ApplicationTrigger appTrigger = new ApplicationTrigger();
             taskBuilder.SetTrigger(appTrigger);
-            
-            task = taskBuilder.Register();
-            
-            task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
+            //if (task != null)
+            //{
+            //     ((BackgroundTaskRegistration)task).Unregister(true);
+            //}
 
+            //foreach(var task_ in BackgroundTaskRegistration.AllTasks.Values)
+            //{
+            //    if(task_.Name == taskName)
+            //    {
+            //        task_.Unregister(true);
+            //    }
+            //}
+
+            task = taskBuilder.Register();
+            task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
             await appTrigger.RequestAsync();
+
+            foreach (var task_ in BackgroundTaskRegistration.AllTasks.Values)
+            {
+                if (task_.Name == taskName)
+                {
+                    _isLaunched = true;
+                    break;
+                }
+            }
         }
 
         //public async void GetFolderWithImages()

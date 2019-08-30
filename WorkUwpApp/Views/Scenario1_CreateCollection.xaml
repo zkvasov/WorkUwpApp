@@ -61,8 +61,7 @@
         <GridView Grid.Column="0" Grid.Row="1"
                   x:Name="ImagesOfPickedFolder"
                   ItemsSource="{Binding Icons, Mode=TwoWay}"
-                  SelectionMode="Multiple"
-                  Width="500">
+                  SelectionMode="Multiple">
 
 
             <Interactivity:Interaction.Behaviors>

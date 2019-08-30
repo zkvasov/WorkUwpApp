@@ -68,8 +68,7 @@
         <GridView Grid.Column="0" Grid.Row="1"
                   x:Name="ImagesOfPickedFolder"
                   ItemsSource="{Binding ImagesToAdd, Mode=OneTime}"
-                  SelectionMode="Multiple"
-                  Width="500">
+                  SelectionMode="Multiple">
             <Interactivity:Interaction.Behaviors>
                 <Core:EventTriggerBehavior EventName="SelectionChanged">
                     <Core:InvokeCommandAction Command="{Binding SelectionChangedToAddCommand}" 
@@ -127,7 +126,6 @@
                   x:Name="CurrentCollectionImages"
                   ItemsSource="{Binding CurrentImages, Mode=TwoWay}"
                   SelectionMode="Multiple"
-                  Width="500"
                   Background="LightBlue">
             <Interactivity:Interaction.Behaviors>
                 <Core:EventTriggerBehavior EventName="SelectionChanged">
