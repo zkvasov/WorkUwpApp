@@ -6,7 +6,7 @@ using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using WorkUwpApp.ViewModels.Helpers;
+using WorkUwpApp.Helpers;
 
 namespace WorkUwpApp.Models
 {
@@ -21,7 +21,7 @@ namespace WorkUwpApp.Models
             //GC.AddMemoryPressure(10 * 1024 * 1024);
             Name = file.Name;
             //SetPath();
-            SetPath(file);
+            //SetPathAsync(file);
             File = file;
         }
 
@@ -30,7 +30,11 @@ namespace WorkUwpApp.Models
         //    GC.RemoveMemoryPressure(10 * 1024 * 1024);
         //}
 
-        private async void SetPath(StorageFile file) //problem is here
+
+
+
+
+        public async Task SetPathAsync(/*StorageFile file*/) //problem is here
         {
 
             //StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Images/Geometry.jpg"));
@@ -41,7 +45,7 @@ namespace WorkUwpApp.Models
             //    ImgSource = image;
             //}
             
-            using (var randomAccessStream = await file.OpenAsync(FileAccessMode.Read))
+            using (var randomAccessStream = await File.OpenAsync(FileAccessMode.Read))
             {
                  var bitmapImage = new BitmapImage();
                  //bitmapImage.UriSource = new Uri(file.Path);

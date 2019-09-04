@@ -5,27 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
-namespace WorkUwpApp.ViewModels.Converters
+namespace WorkUwpApp.Converters
 {
-    public class NullableValueConverter : IValueConverter
+    public class InverseBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return value;
+            if (targetType != typeof(bool))
+                throw new InvalidOperationException("The target must be a boolean");
+
+            return !(bool)value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            int data;
-
-            if (string.IsNullOrEmpty((string)value) || !int.TryParse((string)value, out data))
-            {
-                return null;
-            }
-            else
-            {
-                return data;
-            }
+            throw new NotSupportedException();
         }
     }
 }

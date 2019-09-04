@@ -1,78 +1,113 @@
-﻿<common:BindablePage
+﻿<local:BindablePage
     x:Class="WorkUwpApp.Views.Scenario3_CollectionsList"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WorkUwpApp.Views"
-    xmlns:common="using:WorkUwpApp.Views.Helpers"
     xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
     xmlns:vmm="using:WorkUwpApp.ViewModels"
     xmlns:model="using:WorkUwpApp.Models"
-    xmlns:custombehaviors ="using:WorkUwpApp.ViewModels.Behaviors"
+    xmlns:custombehaviors ="using:WorkUwpApp.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters ="using:WorkUwpApp.ViewModels.Converters"
-    xmlns:controls="using:WinUX.Xaml.Controls.Validation"
-    xmlns:rules="using:WinUX.Data.Validation.Rules"
-    xmlns:validation="using:WinUX.Data.Validation"
+    xmlns:converters ="using:WorkUwpApp.Converters"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:xaml="using:Windows.UI.Xaml"
     mc:Ignorable="d"
     
     DataContext="{Binding Scenario3Instance, Source={StaticResource Locator}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
 
-
-
     <Page.Resources>
         <converters:NullableValueConverter  x:Key="NullableValueConverter"/>
         <converters:NegativeBoolToVisibilityConverter  x:Key="NegativeBoolToVisibilityConverter"/>
+        <converters:BoolToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
+        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="ElementTheme" />
+
+        
     </Page.Resources>
 
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
 
-        <Grid.Resources>
-            <DataTemplate x:Key="CollectionTemplate" 
-              x:DataType="model:ImagesCollection">
-                <TextBlock Text="{x:Bind Name}" 
-                       Margin="10, 5, 0, 5"/>
-            </DataTemplate>
-            <DataTemplate x:Key="IconsTemplate"
-                      x:DataType="model:IconImage">
-                <StackPanel>
-                    <Image Source="{Binding ImgSource}"
-                       Height="100"
-                       Width="140"
-                       Stretch="UniformToFill"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
-                    <TextBlock Text="{x:Bind Name}" HorizontalAlignment="Center"/>
-                </StackPanel>
-            </DataTemplate>
-            
-            <!--<validation:ValidationRules x:Key="IsPositive">
-                <validation:ValidationRules.Rules>
-                    <rules:IntValidationRules/>
-                </validation:ValidationRules.Rules>
-            </validation:ValidationRules>-->
-        </Grid.Resources>
+        <StackPanel Grid.Column="0" Grid.Row="0"
+                    Orientation="Horizontal">
+            <Button 
+                HorizontalAlignment="Left"
+                Margin="10"
+                Command="{Binding SettingsClicked}">
+                Settings
+            </Button>
+
+            <RadioButton
+                        x:Uid="Settings_Theme_Light"
+                        Command="{Binding SwitchThemeCommand}"
+                        IsChecked="{Binding ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                <RadioButton.CommandParameter>
+                    <xaml:ElementTheme>Light</xaml:ElementTheme>
+                </RadioButton.CommandParameter>
+            </RadioButton>
+            <RadioButton
+                        x:Uid="Settings_Theme_Dark"
+                        Command="{Binding SwitchThemeCommand}"
+                        IsChecked="{Binding ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                <RadioButton.CommandParameter>
+                    <xaml:ElementTheme>Dark</xaml:ElementTheme>
+                </RadioButton.CommandParameter>
+            </RadioButton>
+            <RadioButton
+                        x:Uid="Settings_Theme_Default"
+                        Command="{Binding SwitchThemeCommand}"
+                        IsChecked="{Binding ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                <RadioButton.CommandParameter>
+                    <xaml:ElementTheme>Default</xaml:ElementTheme>
+                </RadioButton.CommandParameter>
+            </RadioButton>
+        </StackPanel>
         
-        <ListBox x:Name="CollectionsList" 
-                 Grid.Column="0" 
-                 SelectedItem="{Binding SelectedCollection, Mode=TwoWay}"
-                 ItemsSource="{Binding Collections, Mode=TwoWay}"
-                 ItemTemplate="{StaticResource CollectionTemplate}"
-                 Margin="5"
-                 Width="200"/>
+
+            <ListView x:Name="CollectionsList" 
+                  Grid.Column="0" 
+                  Grid.Row="1"
+                  SelectedItem="{Binding SelectedCollection, Mode=TwoWay}"
+                  ItemsSource="{Binding Collections, Mode=TwoWay}"
+                  Margin="5"
+                  Width="200">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="model:ImagesCollection">
+                    <StackPanel>
+                        <TextBlock Text="{x:Bind Name}" 
+                       Margin="10, 5, 0, 5"/>
+                        <TextBlock Text="Playing in background"
+                               Visibility = "{Binding IsLaunched, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                               HorizontalAlignment="Right"
+                               Margin="0,0,10,0"
+                               Foreground="Gold"/>
+                    </StackPanel>
+
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
 
 
-        <StackPanel Grid.Column="1">
+
+        <StackPanel Grid.Column="1" Grid.Row="1">
             <Button Content="Add new collection"
                     HorizontalAlignment="Center"
                     Margin="10"
@@ -107,21 +142,9 @@
                        Margin="0,0,10,0"
                        HorizontalAlignment="Right"
                        Visibility="{Binding Path=(extensions:TextBoxRegex.IsValid), ElementName=IntervalTextBox, Converter={StaticResource NegativeBoolToVisibilityConverter} }"/>
-            <!--<TextBlock Text="{Binding Errors[SelectedInterval][0]}"
-                       Foreground="Red"
-                       HorizontalAlignment="Right"
-                       Margin="10,0,10,0"/>-->
-
+           
             
-
-            <!--<Slider Width="150" 
-                    Minimum="3" 
-                    Maximum="30" 
-                    StepFrequency="1"
-                    SmallChange="1" 
-                    LargeChange="5" 
-                    Value="{Binding SelectedInterval, Mode=TwoWay}" />-->
         </StackPanel>
 
     </Grid>
-</common:BindablePage>
+</local:BindablePage>

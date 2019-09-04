@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using WorkUwpApp.Interfaces;
 
-namespace WorkUwpApp.Views.Helpers
+namespace WorkUwpApp.Views
 {
     public class BindablePage : Page
     {

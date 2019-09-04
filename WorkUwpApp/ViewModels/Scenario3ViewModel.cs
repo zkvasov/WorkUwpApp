@@ -9,9 +9,11 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Views;
 using Windows.Storage;
 using WorkUwpApp.Models;
-using WorkUwpApp.ViewModels.Helpers;
+using WorkUwpApp.Helpers;
 using WorkUwpApp.Interfaces;
-using WorkUwpApp.Views;
+using Windows.UI.Xaml;
+using WorkUwpApp.Services;
+using System.Windows.Input;
 
 namespace WorkUwpApp.ViewModels
 {
@@ -28,19 +30,42 @@ namespace WorkUwpApp.ViewModels
         private ImagesCollection _selectedCollection;
         private int _selectedInterval = 5;
         private bool _isLoading = false;
+        private ElementTheme _elementTheme = ThemeSelectorService.Theme;
+
+        
         public ObservableCollection<ImagesCollection> Collections { get; }
 
+        public RelayCommand SettingsClicked { get; private set; }
         public RelayCommand AddNewCollectionClicked { get; private set; }
         public RelayCommand EditCollectionClicked { get; private set; }
         public RelayCommand RemoveCollectionClicked { get; private set; }
         public RelayCommand PlayInBgClicked { get; private set; }
 
-        
+        private ICommand _switchThemeCommand;
+        public ICommand SwitchThemeCommand
+        {
+            get
+            {
+                if (_switchThemeCommand == null)
+                {
+                    _switchThemeCommand = new RelayCommand<ElementTheme>(
+                        async (param) =>
+                        {
+                            ElementTheme = param;
+                            await ThemeSelectorService.SetThemeAsync(param);
+                        });
+                }
+
+                return _switchThemeCommand;
+            }
+        }
+
         public Scenario3ViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
             _launcher = new LauncherBgTask();
             Collections = new ObservableCollection<ImagesCollection>();
+            SettingsClicked = new RelayCommand(ShowSettings);
             AddNewCollectionClicked = new RelayCommand(AddNewCollection);
             EditCollectionClicked = new RelayCommand(EditCollection);
             RemoveCollectionClicked = new RelayCommand(RemoveCollection);
@@ -76,7 +101,17 @@ namespace WorkUwpApp.ViewModels
             get => _selectedInterval;
             set => Set(ref _selectedInterval, value);
         }
+        public ElementTheme ElementTheme
+        {
+            get { return _elementTheme; }
 
+            set { Set(ref _elementTheme, value); }
+        }
+
+        private void ShowSettings()
+        {
+            _navigationService.NavigateTo("Settings");
+        }
         private void AddNewCollection()
         {
             _navigationService.NavigateTo("Scenario1_CreateCollection");
@@ -93,7 +128,7 @@ namespace WorkUwpApp.ViewModels
             App.Collections.Remove(SelectedCollection);
             Collections.Remove(SelectedCollection);
         }
-        private void PlayInBg()
+        private async void PlayInBg()
         {
             //ApplicationData.Current.LocalSettings.Values["interval"] = _selectedInterval;
             //var storageItemAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.
@@ -103,10 +138,12 @@ namespace WorkUwpApp.ViewModels
             //// (including other sub - folder contents)
             //Windows.Storage.AccessCache.StorageApplicationPermissions.
             //FutureAccessList.AddOrReplace("PickedFolderToken", SelectedCollection.StorageFolder);
+            MarkCollectionInBg();
 
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
             //TO DO
             localSettings.Values[_intervalSetting] = SelectedInterval;
+            localSettings.Values[_containerChangedSetting] = true;
             //
             localSettings.DeleteContainer(_containerName);
             localSettings.CreateContainer(
@@ -114,8 +151,9 @@ namespace WorkUwpApp.ViewModels
             if (localSettings.Containers.ContainsKey(_containerName))
             {
                 int count = 0;
-                foreach (var file in SelectedCollection.Images)
+                foreach (var filePath in SelectedCollection.ImagePaths)
                 {
+                    var file = await StorageFile.GetFileFromPathAsync(filePath);
                     string fileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(file);
 
                     localSettings.Containers[_containerName].Values[String.Format(_imageSetting + count.ToString())] = fileToken;
@@ -126,6 +164,22 @@ namespace WorkUwpApp.ViewModels
             _launcher.LaunhBgTask();
         }
 
+        private void MarkCollectionInBg()
+        {
+            foreach(var collection in Collections)
+            {
+                collection.IsLaunched = false;
+            }
+            int index = Collections.IndexOf(SelectedCollection);
+            Collections[index].IsLaunched = true;
+
+
+            foreach (var collection in App.Collections)
+            {
+                collection.IsLaunched = false;
+            }
+            App.Collections[index].IsLaunched = true;
+        }
 
         public void OnNavigatedFrom(object sourceType)
         {
@@ -160,15 +214,7 @@ namespace WorkUwpApp.ViewModels
                         Collections.Insert(index, collection);
                         App.InsertCollection(index, collection);
                     }
-                    else if(App.Collections.Count == 1)
-                    {
-                        Collections.Add(App.Collections[0]);
-                    }
                 }
-            }
-            else if (App.typeNameCurrentPage == "Scenario2_CollectionEditor" && App.Collections.Count == 1)
-            {
-                Collections.Add(App.Collections[0]);
             }
         }
     }

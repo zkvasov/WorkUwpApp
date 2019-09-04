@@ -4,7 +4,7 @@ using System.Linq;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 
-namespace WorkUwpApp.ViewModels.Helpers
+namespace WorkUwpApp.Helpers
 {
     public class LauncherBgTask
     {

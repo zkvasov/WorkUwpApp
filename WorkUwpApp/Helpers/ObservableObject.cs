@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
-namespace WorkUwpApp.ViewModels.Helpers
+namespace WorkUwpApp.Helpers
 {
     [DataContract]
     [Serializable]
@@ -15,14 +15,6 @@ namespace WorkUwpApp.ViewModels.Helpers
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        [DataMember]
-        private bool _isSelected = false;
-        [DataMember]
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set { Set(ref _isSelected, value); }
         }
 
         protected bool Set<T>(

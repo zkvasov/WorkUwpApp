@@ -135,15 +135,22 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\EnumToBooleanConverter.cs" />
+    <Compile Include="Helpers\Json.cs" />
+    <Compile Include="Helpers\ResourceExtensions.cs" />
+    <Compile Include="Helpers\SettingsStorageExtensions.cs" />
     <Compile Include="Interfaces\INavigable.cs" />
-    <Compile Include="ViewModels\Converters\NegativeBoolToVisibilityConverter.cs" />
-    <Compile Include="ViewModels\Converters\NullableValueConverter.cs" />
-    <Compile Include="ViewModels\Converters\SelectedItemsToListConverter.cs" />
+    <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\NegativeBoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\NullableValueConverter.cs" />
+    <Compile Include="Converters\SelectedItemsToListConverter.cs" />
+    <Compile Include="Services\ThemeSelectorService.cs" />
     <Compile Include="ViewModels\Scenario1ViewModel.cs" />
     <Compile Include="ViewModels\Scenario2ViewModel.cs" />
     <Compile Include="ViewModels\Scenario3ViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
-    <Compile Include="Views\Helpers\BindablePage.cs" />
+    <Compile Include="Views\BindablePage.cs" />
     <Compile Include="Views\Scenario1_CreateCollection.xaml.cs">
       <DependentUpon>Scenario1_CreateCollection.xaml</DependentUpon>
     </Compile>
@@ -153,16 +160,18 @@
     <Compile Include="Views\Scenario3_CollectionsList.xaml.cs">
       <DependentUpon>Scenario3_CollectionsList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\Behaviors\MultiSelectBehavior.cs" />
-    <Compile Include="ViewModels\Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="ViewModels\Helpers\ComplexCommand.cs" />
-    <Compile Include="ViewModels\Helpers\DelegateCommand.cs" />
+    <Compile Include="Behaviors\MultiSelectBehavior.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Helpers\ComplexCommand.cs" />
+    <Compile Include="Helpers\DelegateCommand.cs" />
     <Compile Include="Models\IconImage.cs" />
-    <Compile Include="ViewModels\Helpers\LauncherBgTask.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\Helpers\ObservableObject.cs" />
+    <Compile Include="Helpers\LauncherBgTask.cs" />
+    <Compile Include="Helpers\ObservableObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\ImagesCollection.cs" />
+    <Compile Include="Views\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -200,6 +209,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Settings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommonServiceLocator">
@@ -234,6 +247,9 @@
       <Project>{55891a7f-1a11-4be5-83b0-13e071b336f1}</Project>
       <Name>RuntimeComponentForDesktop</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Styles\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

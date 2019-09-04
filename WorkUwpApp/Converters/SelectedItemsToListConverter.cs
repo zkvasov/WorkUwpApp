@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using WorkUwpApp.Models;
 
-namespace WorkUwpApp.ViewModels.Converters
+namespace WorkUwpApp.Converters
 {
     public class SelectedItemsToListConverter : IValueConverter
     {

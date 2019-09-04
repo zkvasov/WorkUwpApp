@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 using WorkUwpApp.Models;
-using WorkUwpApp.ViewModels.Helpers;
+using WorkUwpApp.Helpers;
 
 namespace WorkUwpApp.ViewModels
 {
@@ -120,7 +120,9 @@ namespace WorkUwpApp.ViewModels
                     (image.FileType == ".jpeg") ||
                     (image.FileType == ".png"))
                 {
-                    Icons.Add(new IconImage(image));
+                    IconImage icon = new IconImage(image);
+                    await icon.SetPathAsync().ConfigureAwait(true);
+                    Icons.Add(icon);
                 }
             }
 
@@ -141,7 +143,7 @@ namespace WorkUwpApp.ViewModels
         {
             foreach (IconImage image in SelectedImages)
             {
-                Collection.AddImage(image.File);
+                Collection.AddImagePath(image.File.Path);
             }
         }
 
@@ -172,8 +174,7 @@ namespace WorkUwpApp.ViewModels
             //Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
 
             //Cleanup();
-            _navigationService.GoBack();
-
+            _navigationService.NavigateTo("Scenario3_CollectionsList");
             ClearAll();
         }
         private void ClearAll()

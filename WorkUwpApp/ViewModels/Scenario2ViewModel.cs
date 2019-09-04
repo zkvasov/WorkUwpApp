@@ -12,7 +12,7 @@ using Windows.Storage;
 using Windows.UI.Xaml.Navigation;
 using WorkUwpApp.Interfaces;
 using WorkUwpApp.Models;
-using WorkUwpApp.ViewModels.Helpers;
+using WorkUwpApp.Helpers;
 
 namespace WorkUwpApp.ViewModels
 {
@@ -145,7 +145,9 @@ namespace WorkUwpApp.ViewModels
                     (image.FileType == ".jpeg") ||
                     (image.FileType == ".png"))
                 {
-                    ImagesToAdd.Add(new IconImage(image));
+                    IconImage icon = new IconImage(image);
+                    await icon.SetPathAsync().ConfigureAwait(true);
+                    ImagesToAdd.Add(icon);
                 }
             }
 
@@ -209,20 +211,23 @@ namespace WorkUwpApp.ViewModels
             Collection = null;
         }
 
-        private void GetImagesFromCollection(ImagesCollection collection)
+        private async void GetImagesFromCollection(ImagesCollection collection)
         {
-            foreach(var image in collection.Images)
+            foreach(var imagePath in collection.ImagePaths)
             {
-                CurrentImages.Add(new IconImage(image));
+                StorageFile file = await StorageFile.GetFileFromPathAsync(imagePath);
+                IconImage icon = new IconImage(file);
+                await icon.SetPathAsync().ConfigureAwait(true);
+                CurrentImages.Add(icon);
             }
         }
         private void SetEditCollection()
         {
             Collection.Name = NameCollection;
-            Collection.Images.Clear();
+            Collection.ImagePaths.Clear();
             foreach(var image in CurrentImages)
             {
-                Collection.Images.Add(image.File);
+                Collection.ImagePaths.Add(image.File.Path);
             }
         }
 

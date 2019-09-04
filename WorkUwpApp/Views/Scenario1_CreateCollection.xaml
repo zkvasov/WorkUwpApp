@@ -5,21 +5,20 @@
     xmlns:local="using:WorkUwpApp.Views"
     xmlns:vmm="using:WorkUwpApp.ViewModels"
     xmlns:model="using:WorkUwpApp.Models"
-    xmlns:custombehaviors ="using:WorkUwpApp.ViewModels.Behaviors"
+    xmlns:custombehaviors ="using:WorkUwpApp.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:converters ="using:WorkUwpApp.Converters"
     mc:Ignorable="d"
     
     DataContext="{Binding Scenario1Instance, Source={StaticResource Locator}}" 
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
 
-    <!--<Page.DataContext>
-        <vmm:MainViewModel/>
-    </Page.DataContext>-->
     <Page.Resources>
-        <converters:SelectedItemsToListConverter xmlns:converters ="using:WorkUwpApp.ViewModels.Converters" x:Key="SelectedItemsToListConverter"/>
+        <converters:SelectedItemsToListConverter  x:Key="SelectedItemsToListConverter"/>
+        <converters:InverseBooleanConverter  x:Key="InverseBooleanConverter"/>
 
         <!--<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>-->
         <DataTemplate x:Key="CollectionTemplate" 
@@ -96,10 +95,10 @@
                         </Grid.RowDefinitions>
                         
                         <Image Source="{x:Bind ImgSource, Mode=OneTime}"
-                                   Stretch="UniformToFill"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Center"
-                                   Grid.Row="0"/>
+                               Stretch="UniformToFill"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Grid.Row="0"/>
                         <TextBlock Text="{x:Bind Name, Mode=OneTime}" 
                                        HorizontalAlignment="Center"
                                        Grid.Row="1"/>
@@ -120,6 +119,7 @@
             
             <TextBox Text="{Binding NameNewCollection, Mode=TwoWay}"/>
             <Button Content="Create collection"
+                    IsEnabled="{Binding IsCollectionCreated, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"
                     HorizontalAlignment="Center"
                     Margin="10"
                     Command="{Binding CreateNewCollectionClicked}"/>

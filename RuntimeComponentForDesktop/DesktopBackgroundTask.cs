@@ -16,6 +16,7 @@ namespace RuntimeComponentForDesktop
         private const string _containerName = "imagesContainer";
         private const string _imageSetting = "image";
         private const string _intervalSetting = "interval";
+        private const string _containerChangedSetting = "containerChangedSetting";
 
 
         readonly CancellationTokenSource cancel = new CancellationTokenSource();
@@ -75,6 +76,8 @@ namespace RuntimeComponentForDesktop
                     }
                     count++;
                 }
+
+                localSettings.Values[_containerChangedSetting] = false;
                 FolderHandling(_imageFiles);
             }
         }
@@ -130,12 +133,10 @@ namespace RuntimeComponentForDesktop
 
         private void FolderHandling(IReadOnlyList<StorageFile> imageFiles)
         {
-
             //бесконечно  как в кольцевом списке
             int i = 0;
             while (!_cancelRequested)       //если задача прервана, выходим из цикла
             {
-                
                 if (i >= imageFiles.Count)
                 {
                     i = 0;
@@ -145,6 +146,12 @@ namespace RuntimeComponentForDesktop
                 //await Task.Delay(_interval);
                 Thread.Sleep(_interval);                    //интервал между загрузкой изображений
                 i++;
+                var localSettings = ApplicationData.Current.LocalSettings;
+                bool isCollectionChanged = (bool)localSettings.Values[_containerChangedSetting];
+                if (isCollectionChanged)
+                {
+                    GetDataFromSettings();
+                }
             }
         }
 

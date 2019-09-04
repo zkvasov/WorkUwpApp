@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Windows.Storage;
-using WorkUwpApp.ViewModels.Helpers;
+using WorkUwpApp.Helpers;
 
 namespace WorkUwpApp.Models
 {
@@ -11,30 +11,46 @@ namespace WorkUwpApp.Models
     public class ImagesCollection : ObservableObject
     {
         //to do
-        [DataMember]
-        private List<StorageFile> _images;
+        //[DataMember]
+        private List<string> _imagePaths;
+        private string _name;
+        private bool _isLaunched = false;
 
         //public ImagesCollection() { }
         public ImagesCollection(string name)
         {
-            _images = new List<StorageFile>();
+            _imagePaths = new List<string>();
             this.Name = name;
+            this.IsLaunched = false;
         }
-        //public ImagesCollection(StorageFolder storageFolder)
-        //{
-        //    this.Name = storageFolder.Name;
-        //    this.StorageFolder = storageFolder;
-        //}
         [DataMember]
-        public List<StorageFile> Images => _images;
+        public List<string> ImagePaths => _imagePaths;
 
         [DataMember]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                Set(ref _name, value);
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+        [DataMember]
+        public bool IsLaunched
+        {
+            get => _isLaunched;
+            set
+            {
+                Set(ref _isLaunched, value);
+                OnPropertyChanged(nameof(IsLaunched));
+            }
+        }
         //public StorageFolder StorageFolder { get; private set; }
 
-        public void AddImage(StorageFile image)
+        public void AddImagePath(string imagePath)
         {
-            _images.Add(image);
+            ImagePaths.Add(imagePath);
         }
     }
 }

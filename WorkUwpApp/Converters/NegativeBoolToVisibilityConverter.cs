@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace WorkUwpApp.ViewModels.Converters
+namespace WorkUwpApp.Converters
 {
-    public class BoolToVisibilityConverter : IValueConverter
+    public class NegativeBoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if(!(value is bool))
+            if (!(value is bool))
             {
-                return Visibility.Collapsed;
+                return Visibility.Visible;
             }
             bool objValue = (bool)value;
             if (objValue)
             {
-                return Visibility.Visible;
+                return Visibility.Collapsed;
             }
 
-            return Visibility.Collapsed;
+            return Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -31,14 +31,14 @@ namespace WorkUwpApp.ViewModels.Converters
             {
                 if ((bool)value)
                 {
-                    return Visibility.Visible;
+                    return Visibility.Collapsed;
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch { }
 #pragma warning restore CA1031 // Do not catch general exception types
 
-            return Visibility.Collapsed;
+            return Visibility.Visible;
         }
     }
 }
