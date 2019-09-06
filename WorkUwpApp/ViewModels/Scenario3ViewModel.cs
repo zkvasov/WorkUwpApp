@@ -14,6 +14,12 @@ using WorkUwpApp.Interfaces;
 using Windows.UI.Xaml;
 using WorkUwpApp.Services;
 using System.Windows.Input;
+using Windows.UI.Notifications;
+using Windows.Data.Xml.Dom;
+using Windows.UI.StartScreen;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel;
 
 namespace WorkUwpApp.ViewModels
 {
@@ -26,10 +32,12 @@ namespace WorkUwpApp.ViewModels
         private const string _containerChangedSetting = "containerChangedSetting";
 
         //private string _sourcePageTypeFrom;
+        private SecondaryTile _tile;
         private LauncherBgTask _launcher;
         private ImagesCollection _selectedCollection;
         private int _selectedInterval = 5;
         private bool _isLoading = false;
+        private bool _isTilePined;
         private ElementTheme _elementTheme = ThemeSelectorService.Theme;
 
         
@@ -82,7 +90,6 @@ namespace WorkUwpApp.ViewModels
             {
                 _isLoading = value;
                 RaisePropertyChanged(nameof(IsLoading));
-
             }
         }
         public ImagesCollection SelectedCollection
@@ -130,18 +137,17 @@ namespace WorkUwpApp.ViewModels
         }
         private async void PlayInBg()
         {
-            //ApplicationData.Current.LocalSettings.Values["interval"] = _selectedInterval;
-            //var storageItemAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.
-            //    FutureAccessList.Add(SelectedCollection.StorageFolder, SelectedCollection.StorageFolder.Name);
-            //ApplicationData.Current.LocalSettings.Values["storageItemAccessList"] = storageItemAccessList;
-            ////Application now has read/ write access to all contents in the picked folder
-            //// (including other sub - folder contents)
-            //Windows.Storage.AccessCache.StorageApplicationPermissions.
-            //FutureAccessList.AddOrReplace("PickedFolderToken", SelectedCollection.StorageFolder);
             MarkCollectionInBg();
 
+            await SetLocalSettingsAsync();
+
+            _launcher.LaunhBgTask();
+
+            await TileManager.SendTileNotificationAsync("Background Control", "Collection is playing now:", SelectedCollection.Name);
+        }
+        private async Task SetLocalSettingsAsync()
+        {
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-            //TO DO
             localSettings.Values[_intervalSetting] = SelectedInterval;
             localSettings.Values[_containerChangedSetting] = true;
             //
@@ -160,10 +166,7 @@ namespace WorkUwpApp.ViewModels
                     count++;
                 }
             }
-
-            _launcher.LaunhBgTask();
         }
-
         private void MarkCollectionInBg()
         {
             foreach(var collection in Collections)
@@ -181,6 +184,27 @@ namespace WorkUwpApp.ViewModels
             App.Collections[index].IsLaunched = true;
         }
 
+        //TODO
+        private async void SendTile( string id, string value)
+        {
+            if (_tile == null || !SecondaryTile.Exists(id))
+            {
+                _tile = new SecondaryTile(id, value, id, new Uri("ms-appx:///"), TileSize.Default);
+                _tile.VisualElements.ForegroundText = ForegroundText.Light;
+                _tile.VisualElements.ShowNameOnSquare150x150Logo = true;
+                _tile.VisualElements.ShowNameOnSquare310x310Logo = true;
+                _tile.VisualElements.ShowNameOnWide310x150Logo = true;
+                await _tile.RequestCreateAsync();
+            }
+            else
+            {
+                if (SecondaryTile.Exists(id))
+                {
+                    _tile.DisplayName = value;
+                    await _tile.UpdateAsync();
+                }
+            }
+        }
         public void OnNavigatedFrom(object sourceType)
         {
             if (sourceType is string)

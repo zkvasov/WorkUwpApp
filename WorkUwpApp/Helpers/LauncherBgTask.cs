@@ -9,10 +9,16 @@ namespace WorkUwpApp.Helpers
     public class LauncherBgTask
     {
         private const string taskName = "bgImage";
+        private const string _isLaunchedKey = "IsLaunchedBg";
         private bool _isLaunched = false;
 
         public async void LaunhBgTask()
         {
+            //ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            //if (localSettings.Values.ContainsKey(_isLaunchedKey))
+            //{
+            //    _isLaunched = (bool)localSettings.Values[_isLaunchedKey];
+            //}
             if (_isLaunched)
             {
                 return;
@@ -54,13 +60,14 @@ namespace WorkUwpApp.Helpers
             //}
 
             task = taskBuilder.Register();
-            task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
             await appTrigger.RequestAsync();
+            task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
 
             foreach (var task_ in BackgroundTaskRegistration.AllTasks.Values)
             {
                 if (task_.Name == taskName)
                 {
+                    //localSettings.Values[_isLaunchedKey] = true;
                     _isLaunched = true;
                     break;
                 }
@@ -90,7 +97,6 @@ namespace WorkUwpApp.Helpers
 
         //        LaunhBgTask();
         //    }
-
         //}
 
         private void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
@@ -99,7 +105,9 @@ namespace WorkUwpApp.Helpers
             var task = taskList.FirstOrDefault(i => i.Name == taskName);
             if (task != null)
             {
+                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
                 task.Unregister(true);
+                localSettings.Values[_isLaunchedKey] = false;
             }
 
             Debug.WriteLine(message: "Background task completed at " + DateTime.Now.TimeOfDay);

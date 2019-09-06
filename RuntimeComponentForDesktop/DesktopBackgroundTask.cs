@@ -17,6 +17,7 @@ namespace RuntimeComponentForDesktop
         private const string _imageSetting = "image";
         private const string _intervalSetting = "interval";
         private const string _containerChangedSetting = "containerChangedSetting";
+        private const string _isLaunchedKey = "IsLaunchedBg";
 
 
         readonly CancellationTokenSource cancel = new CancellationTokenSource();
@@ -39,6 +40,8 @@ namespace RuntimeComponentForDesktop
                 cancel.Cancel();
                 cancel.Dispose();
                 _cancelRequested = true;
+                //ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+                //localSettings.Values[_isLaunchedKey] = false;
             };
 
             BackgroundTaskDeferral _deferral = taskInstance.GetDeferral();

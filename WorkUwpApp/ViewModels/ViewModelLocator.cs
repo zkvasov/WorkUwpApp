@@ -20,7 +20,6 @@ namespace WorkUwpApp.ViewModels
         public const string Scenario1Key = "Scenario1_CreateCollection";
         public const string Scenario2Key = "Scenario2_CollectionEditor";
         public const string Scenario3Key = "Scenario3_CollectionsList";
-        public const string SettingsKey = "Settings";
 
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
@@ -32,7 +31,6 @@ namespace WorkUwpApp.ViewModels
             nav.Configure(Scenario1Key, typeof(Scenario1_CreateCollection));
             nav.Configure(Scenario2Key, typeof(Scenario2_CollectionEditor));
             nav.Configure(Scenario3Key, typeof(Scenario3_CollectionsList));
-            nav.Configure(SettingsKey, typeof(Settings));
             if (ViewModelBase.IsInDesignModeStatic)
             {
                 // Create design time view services and models
@@ -47,7 +45,6 @@ namespace WorkUwpApp.ViewModels
             SimpleIoc.Default.Register<Scenario1ViewModel>();
             SimpleIoc.Default.Register<Scenario2ViewModel>();
             SimpleIoc.Default.Register<Scenario3ViewModel>();
-            SimpleIoc.Default.Register<SettingsViewModel>();
 
         }
 
@@ -74,21 +71,8 @@ namespace WorkUwpApp.ViewModels
         // </value>
         public static Scenario3ViewModel Scenario3Instance => ServiceLocator.Current.GetInstance<Scenario3ViewModel>();
 
-        // <summary>
-        // Gets the Settings view model.
-        // </summary>
-        // <value>
-        // The Settings view model.
-        // </value>
-        public static SettingsViewModel SettingsInstance => ServiceLocator.Current.GetInstance<SettingsViewModel>();
 
-        // <summary>
-        // The cleanup.
-        // </summary>
-        public static void Cleanup()
-        {
-            // TODO Clear the ViewModels
-        }
+       
     }
 
 }
