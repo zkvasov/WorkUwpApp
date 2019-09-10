@@ -31,7 +31,7 @@ namespace WorkUwpApp.Helpers
                 await StartScreenManager.GetDefault().RequestAddAppListEntryAsync(entry);
             }
 
-            var notification = new TileNotification(content.GetXml());
+            TileNotification notification = new TileNotification(content.GetXml());
             TileUpdateManager.CreateTileUpdaterForApplication().Update(notification);
         }
 
@@ -44,6 +44,8 @@ namespace WorkUwpApp.Helpers
                 {
                     TileMedium = new TileBinding()
                     {
+
+                        
                         Content = new TileBindingContentAdaptive()
                         {
                             Children =
@@ -52,7 +54,7 @@ namespace WorkUwpApp.Helpers
                     {
                         Text = appName
                     },
-
+                   
                     new AdaptiveText()
                     {
                         Text = subject,
@@ -70,6 +72,7 @@ namespace WorkUwpApp.Helpers
 
                     TileWide = new TileBinding()
                     {
+
                         Content = new TileBindingContentAdaptive()
                         {
                             Children =

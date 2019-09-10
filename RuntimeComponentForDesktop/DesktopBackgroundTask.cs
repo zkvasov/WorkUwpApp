@@ -34,20 +34,18 @@ namespace RuntimeComponentForDesktop
             if (cost == BackgroundWorkCostValue.High)
                 return;
 
-            // обрабатываем прерывание задачи
+            // TODO: обрабатываем прерывание задачи
             taskInstance.Canceled += (s, e) =>
             {
                 cancel.Cancel();
                 cancel.Dispose();
                 _cancelRequested = true;
-                //ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-                //localSettings.Values[_isLaunchedKey] = false;
+                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+                localSettings.Values[_isLaunchedKey] = false;
             };
 
             BackgroundTaskDeferral _deferral = taskInstance.GetDeferral();
             GetDataFromSettings();
-            //await LoadBgImage();
-            //SetFromResources();
             _deferral.Complete();
         }
 
@@ -177,23 +175,5 @@ namespace RuntimeComponentForDesktop
             }
         }
         
-        //private async void SetFromResources()
-        //{
-        //    StorageFolder imagesFolder = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync("Images");
-        //    if (imagesFolder != null)
-        //    {
-        //        IReadOnlyList<StorageFile> imageFiles = null;
-        //        ////////////////////////////////
-        //        try
-        //        {
-        //            imageFiles = await imagesFolder.GetFilesAsync();
-        //            FolderHandling(imageFiles);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            Debug.WriteLine(e.ToString());
-        //        }
-        //    }
-        //}
     }
 }

@@ -6,19 +6,19 @@ using Windows.Storage;
 
 namespace WorkUwpApp.Helpers
 {
-    public class LauncherBgTask
+    public static class LauncherBgTask
     {
         private const string taskName = "bgImage";
         private const string _isLaunchedKey = "IsLaunchedBg";
-        private bool _isLaunched = false;
+        private static bool _isLaunched = false;
 
-        public async void LaunhBgTask()
+        public static async void LaunhBgTask()
         {
-            //ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-            //if (localSettings.Values.ContainsKey(_isLaunchedKey))
-            //{
-            //    _isLaunched = (bool)localSettings.Values[_isLaunchedKey];
-            //}
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey(_isLaunchedKey))
+            {
+                _isLaunched = (bool)localSettings.Values[_isLaunchedKey];
+            }
             if (_isLaunched)
             {
                 return;
@@ -67,7 +67,7 @@ namespace WorkUwpApp.Helpers
             {
                 if (task_.Name == taskName)
                 {
-                    //localSettings.Values[_isLaunchedKey] = true;
+                    localSettings.Values[_isLaunchedKey] = true;
                     _isLaunched = true;
                     break;
                 }
@@ -99,7 +99,7 @@ namespace WorkUwpApp.Helpers
         //    }
         //}
 
-        private void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        private static void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
         {
             var taskList = BackgroundTaskRegistration.AllTasks.Values;
             var task = taskList.FirstOrDefault(i => i.Name == taskName);
@@ -113,8 +113,6 @@ namespace WorkUwpApp.Helpers
             Debug.WriteLine(message: "Background task completed at " + DateTime.Now.TimeOfDay);
 
             //ApplicationData.Current.LocalSettings.Values.Clear();
-            //ApplicationData.Current.LocalSettings.Values.Values.Clear();
-            //ApplicationData.Current.LocalSettings.DeleteContainer("path");
         }
     }
 }

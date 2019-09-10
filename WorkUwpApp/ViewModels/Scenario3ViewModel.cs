@@ -31,13 +31,10 @@ namespace WorkUwpApp.ViewModels
         private const string _intervalSetting = "interval";
         private const string _containerChangedSetting = "containerChangedSetting";
 
-        //private string _sourcePageTypeFrom;
-        private SecondaryTile _tile;
-        private LauncherBgTask _launcher;
+        //private LauncherBgTask _launcher;
         private ImagesCollection _selectedCollection;
         private int _selectedInterval = 5;
         private bool _isLoading = false;
-        private bool _isTilePined;
         private ElementTheme _elementTheme = ThemeSelectorService.Theme;
 
         
@@ -71,7 +68,7 @@ namespace WorkUwpApp.ViewModels
         public Scenario3ViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
-            _launcher = new LauncherBgTask();
+            //_launcher = new LauncherBgTask();
             Collections = new ObservableCollection<ImagesCollection>();
             SettingsClicked = new RelayCommand(ShowSettings);
             AddNewCollectionClicked = new RelayCommand(AddNewCollection);
@@ -139,11 +136,11 @@ namespace WorkUwpApp.ViewModels
         {
             MarkCollectionInBg();
 
-            await SetLocalSettingsAsync();
+            await SetLocalSettingsAsync().ConfigureAwait(false);
 
-            _launcher.LaunhBgTask();
+            LauncherBgTask.LaunhBgTask();
 
-            await TileManager.SendTileNotificationAsync("Background Control", "Collection is playing now:", SelectedCollection.Name);
+            await TileManager.SendTileNotificationAsync("Background Control", "Collection is playing now:", SelectedCollection.Name).ConfigureAwait(false);
         }
         private async Task SetLocalSettingsAsync()
         {
@@ -184,27 +181,6 @@ namespace WorkUwpApp.ViewModels
             App.Collections[index].IsLaunched = true;
         }
 
-        //TODO
-        private async void SendTile( string id, string value)
-        {
-            if (_tile == null || !SecondaryTile.Exists(id))
-            {
-                _tile = new SecondaryTile(id, value, id, new Uri("ms-appx:///"), TileSize.Default);
-                _tile.VisualElements.ForegroundText = ForegroundText.Light;
-                _tile.VisualElements.ShowNameOnSquare150x150Logo = true;
-                _tile.VisualElements.ShowNameOnSquare310x310Logo = true;
-                _tile.VisualElements.ShowNameOnWide310x150Logo = true;
-                await _tile.RequestCreateAsync();
-            }
-            else
-            {
-                if (SecondaryTile.Exists(id))
-                {
-                    _tile.DisplayName = value;
-                    await _tile.UpdateAsync();
-                }
-            }
-        }
         public void OnNavigatedFrom(object sourceType)
         {
             if (sourceType is string)

@@ -201,9 +201,6 @@ namespace WorkUwpApp.ViewModels
         }
         private void ClearAll()
         {
-            //TODO
-       
-            //
             SelectedImagesToAdd.Clear();
             ImagesToAdd.Clear();
             CurrentSelectedImages.Clear();

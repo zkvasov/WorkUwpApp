@@ -76,8 +76,6 @@ namespace WorkUwpApp.Behaviors
             }
         }
 
-        //TODO
-        //
         private static void SelectedItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (sender != null && sender is MultiSelectBehavior)   //adding "sender != null &&"

@@ -12,6 +12,7 @@ namespace WorkUwpApp.Models
     {
         //to do
         //[DataMember]
+        [NonSerialized]
         private List<string> _imagePaths;
         private string _name;
         private bool _isLaunched = false;

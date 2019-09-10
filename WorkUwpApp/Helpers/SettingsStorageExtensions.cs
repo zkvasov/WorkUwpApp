@@ -35,12 +35,12 @@ namespace WorkUwpApp.Helpers
             var file = await folder.GetFileAsync($"{name}.json");
             var fileContent = await FileIO.ReadTextAsync(file);
 
-            return await Json.ToObjectAsync<T>(fileContent);
+            return await Json.ToObjectAsync<T>(fileContent).ConfigureAwait(false);
         }
 
         public static async Task SaveAsync<T>(this ApplicationDataContainer settings, string key, T value)
         {
-            settings.SaveString(key, await Json.StringifyAsync(value));
+            settings.SaveString(key, await Json.StringifyAsync(value).ConfigureAwait(false));
         }
 
         public static void SaveString(this ApplicationDataContainer settings, string key, string value)
