@@ -145,12 +145,18 @@
     <Compile Include="Converters\NegativeBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\NullableValueConverter.cs" />
     <Compile Include="Converters\SelectedItemsToListConverter.cs" />
+    <Compile Include="Models\AddonCollection.cs" />
+    <Compile Include="Services\AddonsService.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
+    <Compile Include="ViewModels\PurchasesViewModel.cs" />
     <Compile Include="ViewModels\Scenario1ViewModel.cs" />
     <Compile Include="ViewModels\Scenario2ViewModel.cs" />
     <Compile Include="ViewModels\Scenario3ViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="Views\BindablePage.cs" />
+    <Compile Include="Views\PurchasesPage.xaml.cs">
+      <DependentUpon>PurchasesPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Scenario1_CreateCollection.xaml.cs">
       <DependentUpon>Scenario1_CreateCollection.xaml</DependentUpon>
     </Compile>
@@ -177,6 +183,23 @@
     <None Include="WorkUwpApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Add-ons\Cats\30948.jpg" />
+    <Content Include="Add-ons\Cats\33826.jpg" />
+    <Content Include="Add-ons\Cats\45261.jpg" />
+    <Content Include="Add-ons\Cats\45415.jpg" />
+    <Content Include="Add-ons\Mountains\35951.jpg" />
+    <Content Include="Add-ons\Mountains\39329.jpg" />
+    <Content Include="Add-ons\Mountains\39719.jpg" />
+    <Content Include="Add-ons\Mountains\40977.jpg" />
+    <Content Include="Add-ons\Space\32418.jpg" />
+    <Content Include="Add-ons\Space\33375.jpg" />
+    <Content Include="Add-ons\Space\34128.jpg" />
+    <Content Include="Add-ons\Space\38516.jpg" />
+    <Content Include="Add-ons\Sunsets\29667.jpg" />
+    <Content Include="Add-ons\Sunsets\35662.jpg" />
+    <Content Include="Add-ons\Sunsets\38499.jpg" />
+    <Content Include="Add-ons\Sunsets\38516.jpg" />
+    <Content Include="Assets\test.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -191,6 +214,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\PurchasesPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Scenario1_CreateCollection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

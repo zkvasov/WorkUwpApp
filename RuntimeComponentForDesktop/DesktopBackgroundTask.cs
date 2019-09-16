@@ -26,7 +26,7 @@ namespace RuntimeComponentForDesktop
         private List<StorageFile> _imageFiles;
         private int _interval;    //интервал между загрузкой изображений
 
-        public void Run(IBackgroundTaskInstance taskInstance)
+        public async void Run(IBackgroundTaskInstance taskInstance)
         {
             Debug.WriteLine(taskInstance.Task.Name);
             //оценка стоимости выполнения задачи для приложения
@@ -45,11 +45,13 @@ namespace RuntimeComponentForDesktop
             };
 
             BackgroundTaskDeferral _deferral = taskInstance.GetDeferral();
-            GetDataFromSettings();
+
+            await GetDataFromSettings();
+
             _deferral.Complete();
         }
 
-        private async void GetDataFromSettings()
+        private async Task GetDataFromSettings()
         {
             var localSettings = ApplicationData.Current.LocalSettings;
             int seconds = (int)localSettings.Values[_intervalSetting];
@@ -79,7 +81,7 @@ namespace RuntimeComponentForDesktop
                 }
 
                 localSettings.Values[_containerChangedSetting] = false;
-                FolderHandling(_imageFiles);
+                await FolderHandling(_imageFiles);
             }
         }
 
@@ -132,7 +134,7 @@ namespace RuntimeComponentForDesktop
         //   //settings.Values.Remove("interval");
         //}
 
-        private void FolderHandling(IReadOnlyList<StorageFile> imageFiles)
+        private async Task FolderHandling(IReadOnlyList<StorageFile> imageFiles)
         {
             //бесконечно  как в кольцевом списке
             int i = 0;
@@ -143,7 +145,8 @@ namespace RuntimeComponentForDesktop
                     i = 0;
                 }
 
-                SetDesktopBackground(imageFiles[i]);
+                //SetDesktopBackground(imageFiles[i]);
+                await SetDesktopBackgroundAsync(imageFiles[i]);
                 //await Task.Delay(_interval);
                 Thread.Sleep(_interval);                    //интервал между загрузкой изображений
                 i++;
@@ -151,29 +154,39 @@ namespace RuntimeComponentForDesktop
                 bool isCollectionChanged = (bool)localSettings.Values[_containerChangedSetting];
                 if (isCollectionChanged)
                 {
-                    GetDataFromSettings();
+                    await GetDataFromSettings();
                 }
             }
         }
 
-        private void SetDesktopBackground(StorageFile file)
+        //private void SetDesktopBackground(StorageFile file)
+        //{
+        //    if (UserProfilePersonalizationSettings.IsSupported())
+        //    {
+
+        //        var outer = Task.Factory.StartNew(async() =>      // внешняя задача
+        //        {
+        //            StorageFile localFile = await file.CopyAsync(ApplicationData.Current.LocalFolder, file.Name,
+        //                                                                             NameCollisionOption.ReplaceExisting); 
+        //            var inner = Task.Factory.StartNew(async () =>  // вложенная задача
+        //            {
+        //                UserProfilePersonalizationSettings settings = UserProfilePersonalizationSettings.Current;
+        //                bool isSuccess = await settings.TrySetWallpaperImageAsync(localFile);
+        //            }, TaskCreationOptions.AttachedToParent);
+        //        });
+        //        outer.Wait(); // ожидаем выполнения внешней задачи
+        //    }
+        //}
+        private async Task SetDesktopBackgroundAsync(StorageFile file)
         {
+           
             if (UserProfilePersonalizationSettings.IsSupported())
             {
-
-                var outer = Task.Factory.StartNew(async() =>      // внешняя задача
-                {
-                    StorageFile localFile = await file.CopyAsync(ApplicationData.Current.LocalFolder, file.Name,
-                                                                                     NameCollisionOption.ReplaceExisting); 
-                    var inner = Task.Factory.StartNew(async () =>  // вложенная задача
-                    {
-                        UserProfilePersonalizationSettings settings = UserProfilePersonalizationSettings.Current;
-                        bool isSuccess = await settings.TrySetWallpaperImageAsync(localFile);
-                    }, TaskCreationOptions.AttachedToParent);
-                });
-                outer.Wait(); // ожидаем выполнения внешней задачи
+                StorageFile localFile = await file.CopyAsync(ApplicationData.Current.LocalFolder, file.Name,
+                                                                                       NameCollisionOption.ReplaceExisting);
+                UserProfilePersonalizationSettings settings = UserProfilePersonalizationSettings.Current;
+                await settings.TrySetWallpaperImageAsync(localFile);
             }
         }
-        
     }
 }

@@ -33,18 +33,24 @@ namespace WorkUwpApp.ViewModels
 
         //private LauncherBgTask _launcher;
         private ImagesCollection _selectedCollection;
+        private ImagesCollection _selectedPurchCollection; 
+        private ImagesCollection _selectedCustomCollection;
         private int _selectedInterval = 5;
         private bool _isLoading = false;
         private ElementTheme _elementTheme = ThemeSelectorService.Theme;
 
-        
+        //TODO: delete to solve the problem of reusability 
         public ObservableCollection<ImagesCollection> Collections { get; }
+        public ObservableCollection<ImagesCollection> PurchasedCollections { get; }
 
         public RelayCommand SettingsClicked { get; private set; }
         public RelayCommand AddNewCollectionClicked { get; private set; }
         public RelayCommand EditCollectionClicked { get; private set; }
         public RelayCommand RemoveCollectionClicked { get; private set; }
         public RelayCommand PlayInBgClicked { get; private set; }
+        public RelayCommand PurchaseCollectionsClicked { get; private set; }
+        public RelayCommand CustomItemClicked { get; private set; }
+        public RelayCommand PurchasedItemClicked { get; private set; }
 
         private ICommand _switchThemeCommand;
         public ICommand SwitchThemeCommand
@@ -70,11 +76,15 @@ namespace WorkUwpApp.ViewModels
             _navigationService = navigationService;
             //_launcher = new LauncherBgTask();
             Collections = new ObservableCollection<ImagesCollection>();
+            PurchasedCollections = new ObservableCollection<ImagesCollection>();
             SettingsClicked = new RelayCommand(ShowSettings);
             AddNewCollectionClicked = new RelayCommand(AddNewCollection);
             EditCollectionClicked = new RelayCommand(EditCollection);
             RemoveCollectionClicked = new RelayCommand(RemoveCollection);
             PlayInBgClicked = new RelayCommand(PlayInBg);
+            PurchaseCollectionsClicked = new RelayCommand(PurchaseCollections);
+            CustomItemClicked = new RelayCommand(ClickCustomItem);
+            PurchasedItemClicked = new RelayCommand(ClickPurchasedItem);
         }
 
         public bool IsLoading
@@ -100,6 +110,37 @@ namespace WorkUwpApp.ViewModels
         }
         public bool IsSelectedCollection => SelectedCollection != null;
 
+        public ImagesCollection SelectedCustomCollection
+        {
+            get => _selectedCustomCollection;
+            set
+            {
+                Set(ref _selectedCustomCollection, value);
+                if(value != null)
+                {
+                    Set(ref _selectedCollection, value);
+                }
+                RaisePropertyChanged(nameof(IsSelectedCollection));
+                RaisePropertyChanged(nameof(IsNotSelectedPurchCollection));
+                RaisePropertyChanged(nameof(IsNotSelectedCustomCollection));
+            }
+        }
+        public bool IsNotSelectedCustomCollection => IsSelectedCollection && (SelectedCustomCollection == null);
+        public ImagesCollection SelectedPurchCollection
+        {
+            get => _selectedPurchCollection;
+            set
+            {
+                Set(ref _selectedPurchCollection, value);
+                if (value != null)
+                {
+                    Set(ref _selectedCollection, value);
+                }
+                RaisePropertyChanged(nameof(IsSelectedCollection));
+                RaisePropertyChanged(nameof(IsNotSelectedPurchCollection));
+            }
+        }
+        public bool IsNotSelectedPurchCollection => IsSelectedCollection && (SelectedPurchCollection == null);
         public int SelectedInterval
         {
             get => _selectedInterval;
@@ -127,6 +168,12 @@ namespace WorkUwpApp.ViewModels
                 _navigationService.NavigateTo("Scenario2_CollectionEditor", SelectedCollection);
             }
         }
+        
+        private void PurchaseCollections()
+        {
+            _navigationService.NavigateTo("PurchasesPage");
+        }
+
         private void RemoveCollection()
         {
             App.Collections.Remove(SelectedCollection);
@@ -170,17 +217,45 @@ namespace WorkUwpApp.ViewModels
             {
                 collection.IsLaunched = false;
             }
-            int index = Collections.IndexOf(SelectedCollection);
-            Collections[index].IsLaunched = true;
-
-
             foreach (var collection in App.Collections)
             {
                 collection.IsLaunched = false;
             }
-            App.Collections[index].IsLaunched = true;
+            foreach (var collection in PurchasedCollections)
+            {
+                collection.IsLaunched = false;
+            }
+            foreach (var collection in App.PurchaseCollections)
+            {
+                collection.IsLaunched = false;
+            }
+
+            int index = Collections.IndexOf(SelectedCollection);
+            if(index != -1)
+            {
+                Collections[index].IsLaunched = true;
+                App.Collections[index].IsLaunched = true;
+            }
+            else
+            {
+                int ind = PurchasedCollections.IndexOf(SelectedCollection);
+                if (ind != -1)
+                {
+                    PurchasedCollections[ind].IsLaunched = true;
+                    App.PurchaseCollections[ind].IsLaunched = true;
+                }
+            }
+            
         }
 
+        private void ClickCustomItem()
+        {
+            SelectedPurchCollection = null;
+        }
+        private void ClickPurchasedItem()
+        {
+            SelectedCustomCollection = null;
+        }
         public void OnNavigatedFrom(object sourceType)
         {
             if (sourceType is string)
@@ -188,8 +263,10 @@ namespace WorkUwpApp.ViewModels
                 App.typeNameCurrentPage = (string)sourceType;
             }
         }
+        //TODO: remake more clearly
         public void OnNavigatedTo(object parameter)
         {
+            UpdatePurchasedCollns();
             if (App.typeNameCurrentPage == "Scenario3_CollectionsList" && App.Collections.Count > 1)
             {
                 this.Collections.Clear();
@@ -215,6 +292,17 @@ namespace WorkUwpApp.ViewModels
                         App.InsertCollection(index, collection);
                     }
                 }
+            }
+        }
+        private void UpdatePurchasedCollns()
+        {
+            if (PurchasedCollections.Count != 0)
+            {
+                PurchasedCollections.Clear();
+            }
+            foreach (var addon in App.PurchaseCollections)
+            {
+                PurchasedCollections.Add(addon);
             }
         }
     }

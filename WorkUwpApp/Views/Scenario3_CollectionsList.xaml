@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WorkUwpApp.Views"
     xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
-    xmlns:vmm="using:WorkUwpApp.ViewModels"
+    xmlns:app="using:WorkUwpApp"
     xmlns:model="using:WorkUwpApp.Models"
     xmlns:custombehaviors ="using:WorkUwpApp.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -73,32 +73,74 @@
                 </RadioButton.CommandParameter>
             </RadioButton>
         </StackPanel>
-        
 
-            <ListView x:Name="CollectionsList" 
-                  Grid.Column="0" 
-                  Grid.Row="1"
-                  SelectedItem="{Binding SelectedCollection, Mode=TwoWay}"
-                  ItemsSource="{Binding Collections, Mode=TwoWay}"
-                  Margin="5"
-                  Width="200">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="model:ImagesCollection">
-                    <StackPanel>
-                        <TextBlock Text="{x:Bind Name}" 
-                       Margin="10, 5, 0, 5"/>
-                        <TextBlock Text="Playing in background"
-                               Visibility = "{Binding IsLaunched, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                               HorizontalAlignment="Right"
-                               Margin="0,0,10,0"
-                               Foreground="Gold"/>
-                    </StackPanel>
+        <ScrollViewer Grid.Column="0" Grid.Row="1">
+            <StackPanel>
+                <ListView x:Name="CustomCollectionsList" 
+                          SelectedItem="{Binding SelectedCustomCollection, Mode=TwoWay}"
+                          ItemsSource="{Binding Collections, Mode=TwoWay}"
+                          IsItemClickEnabled="True"
+                          Margin="5"
+                          Width="200">
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding CustomItemClicked}" />
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                    <ListView.ItemTemplate>
+                       <DataTemplate x:DataType="model:ImagesCollection">
+                           <StackPanel>
+                               <TextBlock Text="{x:Bind Name}" 
+                              Margin="10, 5, 0, 5"/>
+                               <TextBlock Text="Playing in background"
+                                      Visibility = "{Binding IsLaunched, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                      HorizontalAlignment="Right"
+                                      Margin="0,0,10,0"
+                                      Foreground="Gold"/>
+                           </StackPanel>
 
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                       </DataTemplate>
+                   </ListView.ItemTemplate>
+               </ListView>
 
+                <Button Content="Purchase collections"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Bottom"
+                       Margin="10"
+                       Command="{Binding PurchaseCollectionsClicked}"/>
 
+                <ListView x:Name="PurchasedCollectionsList" 
+                          SelectedItem="{Binding SelectedPurchCollection, Mode=TwoWay}"
+                          ItemsSource="{Binding PurchasedCollections, Mode=OneWay}"
+                          IsItemClickEnabled="True"
+                          Margin="5"
+                          Width="200">
+                    
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding PurchasedItemClicked}" />
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                    
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="model:ImagesCollection">
+                            <StackPanel>
+                                <TextBlock Text="{x:Bind Name}" 
+                                           Margin="10, 5, 0, 5"/>
+                                <TextBlock Text="Playing in background"
+                                           Visibility = "{Binding IsLaunched, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                           HorizontalAlignment="Right"
+                                           Margin="0,0,10,0"
+                                           Foreground="Gold"/>
+                            </StackPanel>
+
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                
+            </StackPanel>
+        </ScrollViewer>
 
 
         <StackPanel Grid.Column="1" Grid.Row="1">
@@ -109,14 +151,13 @@
             <Button Content="Edit collection"
                     HorizontalAlignment="Center"
                     Margin="10"
-                    IsEnabled="{Binding IsSelectedCollection, Mode=OneWay}"
+                    IsEnabled="{Binding IsNotSelectedPurchCollection, Mode=TwoWay}"
                     Command="{Binding EditCollectionClicked}"/>
             <Button Content="Remove collection"
                     HorizontalAlignment="Center"
                     Margin="10"
-                    IsEnabled="{Binding IsSelectedCollection, Mode=OneWay}"
+                    IsEnabled="{Binding IsNotSelectedPurchCollection, Mode=OneWay}"
                     Command="{Binding RemoveCollectionClicked}"/>
-            
 
             <Button Content="Play collection in background"
                     IsEnabled="{Binding IsSelectedCollection, Mode=OneWay}"

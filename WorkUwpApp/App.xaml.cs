@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Store;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.UI.Xaml;
@@ -24,14 +25,19 @@ namespace WorkUwpApp
     /// </summary>
     sealed partial class App : Application
     {
+
         //private const string _containerCollections= "collsContainer";
         //private const string _containerName = "collContainer";
         //private const string _collectionNameKey = "collName";
-        private const string _imageKey = "imageKey";
+        //private const string _imageKey = "imageKey";
         private const string _collsInJsonKey = "CollectionsInJson";
+        private const string _isLaunchedKey = "IsLaunchedBg";
 
         public static string typeNameCurrentPage;
         public static List<ImagesCollection> Collections = new List<ImagesCollection>();
+        public static List<ImagesCollection> PurchaseCollections = new List<ImagesCollection>();
+
+        public static LicenseInformation AppLicenseInformation { get; set; } = CurrentAppSimulator.LicenseInformation;
 
         //Application app;
         /// <summary>
@@ -44,7 +50,6 @@ namespace WorkUwpApp
         public App()
         {
             //LoadDataAsync();
-            DeserializeDataAsync();
             this.InitializeComponent();
             this.Suspending += OnSuspending;
             //this.LeavingBackground += OnLeavingBackGround;
@@ -70,9 +75,7 @@ namespace WorkUwpApp
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-#pragma warning disable CA1062 // Validate arguments of public methods
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-#pragma warning restore CA1062 // Validate arguments of public methods
                 {
                     //TODO: Load state from previously suspended application
                 }
@@ -88,8 +91,12 @@ namespace WorkUwpApp
                     // When the navigation stack isn't restored navigate to the first page,
                     // configuring the new page by passing required information as a navigation
                     // parameter
-                    //TODO
+                    DeserializeDataAsync();
+                    AddonsService.LoadAddons();
                     SetTheme();
+                    //TODO Comlete(or remake) BgTask logic
+                    ResetBgTask();
+                    //
 
                     if (Collections == null || Collections.Count == 0) 
                     {
@@ -99,7 +106,6 @@ namespace WorkUwpApp
                     else if (Collections.Count == 1)
                     {
                         typeNameCurrentPage = "Scenario2_CollectionEditor";
-
                         rootFrame.Navigate(typeof(Scenario2_CollectionEditor), Collections[0]);
                     }
                     else
@@ -108,7 +114,6 @@ namespace WorkUwpApp
                         rootFrame.Navigate(typeof(Scenario3_CollectionsList), e.Arguments);
                     }
 
-                    //
 
                 }
                 // Ensure the current window is active
@@ -250,7 +255,12 @@ namespace WorkUwpApp
             //await FileIO.WriteTextAsync(file, data);
 
         }
-
+        //TODO: Delete after testing
+        private static void ResetBgTask()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values[_isLaunchedKey] = false;
+        }
         private static void DeserializeDataAsync()
         {
             //StorageFolder localFolder = ApplicationData.Current.LocalFolder;
@@ -278,8 +288,8 @@ namespace WorkUwpApp
 
         private async void SetTheme()
         {
-            await ThemeSelectorService.InitializeAsync();
-            await ThemeSelectorService.SetRequestedThemeAsync();
+            await ThemeSelectorService.InitializeAsync().ConfigureAwait(true);
+            await ThemeSelectorService.SetRequestedThemeAsync().ConfigureAwait(false);
         }
     }
 }

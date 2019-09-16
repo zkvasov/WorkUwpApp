@@ -15,12 +15,6 @@ namespace WorkUwpApp.Helpers
     {
         public static async Task SendTileNotificationAsync(string appName, string subject, string body)
         {
-
-            //string from = "Jennifer Parker";
-            //string subject = "Photos from our trip";
-            //string body = "Check out these awesome photos I took while in New Zealand!";
-
-
             // Construct the tile content
             TileContent content = GenerateTileContent(appName, subject, body);
 

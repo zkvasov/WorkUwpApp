@@ -22,7 +22,6 @@ namespace WorkUwpApp.Models
         {
             _imagePaths = new List<string>();
             this.Name = name;
-            this.IsLaunched = false;
         }
         [DataMember]
         public List<string> ImagePaths => _imagePaths;
