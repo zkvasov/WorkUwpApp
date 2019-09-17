@@ -14,6 +14,10 @@ namespace WorkUwpApp.Views
     {
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
+            if (e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
             base.OnNavigatedFrom(e);
 
             var navigableViewModel = this.DataContext as INavigable;
@@ -26,6 +30,10 @@ namespace WorkUwpApp.Views
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            if (e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
             base.OnNavigatedTo(e);
             
             var navigableViewModel = this.DataContext as INavigable;

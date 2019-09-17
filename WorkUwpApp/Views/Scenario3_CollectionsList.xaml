@@ -6,7 +6,6 @@
     xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
     xmlns:app="using:WorkUwpApp"
     xmlns:model="using:WorkUwpApp.Models"
-    xmlns:custombehaviors ="using:WorkUwpApp.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters ="using:WorkUwpApp.Converters"

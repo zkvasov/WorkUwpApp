@@ -14,47 +14,68 @@ namespace WorkUwpApp.Helpers
 
         public static bool IsRoamingStorageAvailable(this ApplicationData appData)
         {
+            if (appData == null)
+            {
+                throw new ArgumentNullException(nameof(appData));
+            }
             return appData.RoamingStorageQuota == 0;
         }
 
         public static async Task SaveAsync<T>(this StorageFolder folder, string name, T content)
         {
+            if (folder == null)
+            {
+                throw new ArgumentNullException(nameof(folder));
+            }
             var file = await folder.CreateFileAsync(GetFileName(name), CreationCollisionOption.ReplaceExisting);
-            var fileContent = await Json.StringifyAsync(content);
+            var fileContent = await JsonHelper.StringifyAsync(content).ConfigureAwait(true);
 
             await FileIO.WriteTextAsync(file, fileContent);
         }
 
         public static async Task<T> ReadAsync<T>(this StorageFolder folder, string name)
         {
+            if (folder == null)
+            {
+                throw new ArgumentNullException(nameof(folder));
+            }
             if (!File.Exists(Path.Combine(folder.Path, GetFileName(name))))
             {
-                return default(T);
+                return default;
             }
 
             var file = await folder.GetFileAsync($"{name}.json");
             var fileContent = await FileIO.ReadTextAsync(file);
 
-            return await Json.ToObjectAsync<T>(fileContent).ConfigureAwait(false);
+            return await JsonHelper.ToObjectAsync<T>(fileContent).ConfigureAwait(false);
         }
 
         public static async Task SaveAsync<T>(this ApplicationDataContainer settings, string key, T value)
         {
-            settings.SaveString(key, await Json.StringifyAsync(value).ConfigureAwait(false));
+            settings.SaveString(key, await JsonHelper.StringifyAsync(value).ConfigureAwait(false));
         }
 
         public static void SaveString(this ApplicationDataContainer settings, string key, string value)
         {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
             settings.Values[key] = value;
         }
 
         public static async Task<T> ReadAsync<T>(this ApplicationDataContainer settings, string key)
         {
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
             object obj = null;
 
             if (settings.Values.TryGetValue(key, out obj))
             {
-                return await Json.ToObjectAsync<T>((string)obj);
+                return await JsonHelper.ToObjectAsync<T>((string)obj).ConfigureAwait(true);
             }
 
             return default(T);
@@ -72,6 +93,11 @@ namespace WorkUwpApp.Helpers
                 throw new ArgumentException("ExceptionSettingsStorageExtensionsFileNameIsNullOrEmpty".GetLocalized(), nameof(fileName));
             }
 
+            if (folder == null)
+            {
+                throw new ArgumentNullException(nameof(folder));
+            }
+
             var storageFile = await folder.CreateFileAsync(fileName, options);
             await FileIO.WriteBytesAsync(storageFile, content);
             return storageFile;
@@ -79,12 +105,16 @@ namespace WorkUwpApp.Helpers
 
         public static async Task<byte[]> ReadFileAsync(this StorageFolder folder, string fileName)
         {
+            if (folder == null)
+            {
+                throw new ArgumentNullException(nameof(folder));
+            }
             var item = await folder.TryGetItemAsync(fileName).AsTask().ConfigureAwait(false);
 
             if ((item != null) && item.IsOfType(StorageItemTypes.File))
             {
                 var storageFile = await folder.GetFileAsync(fileName);
-                byte[] content = await storageFile.ReadBytesAsync();
+                byte[] content = await storageFile.ReadBytesAsync().ConfigureAwait(true);
                 return content;
             }
 

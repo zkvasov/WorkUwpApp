@@ -5,7 +5,6 @@
     xmlns:local="using:WorkUwpApp.Views"
     xmlns:vmm="using:WorkUwpApp.ViewModels"
     xmlns:model="using:WorkUwpApp.Models"
-    xmlns:custombehaviors ="using:WorkUwpApp.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"

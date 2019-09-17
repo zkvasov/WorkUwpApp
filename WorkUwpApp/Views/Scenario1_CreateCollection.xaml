@@ -5,7 +5,6 @@
     xmlns:local="using:WorkUwpApp.Views"
     xmlns:vmm="using:WorkUwpApp.ViewModels"
     xmlns:model="using:WorkUwpApp.Models"
-    xmlns:custombehaviors ="using:WorkUwpApp.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
@@ -20,7 +19,6 @@
         <converters:SelectedItemsToListConverter  x:Key="SelectedItemsToListConverter"/>
         <converters:InverseBooleanConverter  x:Key="InverseBooleanConverter"/>
 
-        <!--<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>-->
         <DataTemplate x:Key="CollectionTemplate" 
               x:DataType="model:ImagesCollection">
             <TextBlock Text="{x:Bind Name}" 
@@ -76,12 +74,6 @@
                 <Core:InvokeCommandAction Command="{Binding AddImagesCommand}"
                                           CommandParameter="{Binding ElementName=ImagesOfPickedFolder, Path=SelectedItem}"/>
                 </Core:EventTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>-->
-            
-            <!--<Interactivity:Interaction.Behaviors>
-                <custombehaviors:MultiSelectBehavior SelectedItems="{Binding SelectedImages, Mode=TwoWay}">
-
-                </custombehaviors:MultiSelectBehavior>
             </Interactivity:Interaction.Behaviors>-->
             
             <GridView.ItemTemplate>

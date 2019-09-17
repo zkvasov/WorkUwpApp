@@ -33,11 +33,12 @@ namespace WorkUwpApp
         private const string _collsInJsonKey = "CollectionsInJson";
         private const string _isLaunchedKey = "IsLaunchedBg";
 
-        public static string typeNameCurrentPage;
-        public static List<ImagesCollection> Collections = new List<ImagesCollection>();
-        public static List<ImagesCollection> PurchaseCollections = new List<ImagesCollection>();
+        internal static string typeNameCurrentPage;
+        internal static List<ImagesCollection> Collections = new List<ImagesCollection>();
+        internal static List<ImagesCollection> PurchaseCollections = new List<ImagesCollection>();
 
         public static LicenseInformation AppLicenseInformation { get; set; } = CurrentAppSimulator.LicenseInformation;
+
 
         //Application app;
         /// <summary>
@@ -65,7 +66,10 @@ namespace WorkUwpApp
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
-            
+            if (e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
             if (rootFrame == null)
@@ -75,10 +79,10 @@ namespace WorkUwpApp
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
+                //if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                //{
+                //    //TODO: Load state from previously suspended application
+                //}
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;

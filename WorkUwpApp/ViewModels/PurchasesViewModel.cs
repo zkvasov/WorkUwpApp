@@ -67,7 +67,7 @@ namespace WorkUwpApp.ViewModels
                         PurchaseResults results = await CurrentAppSimulator.RequestProductPurchaseAsync(inAppOfferToken);
                         if (results.Status == ProductPurchaseStatus.Succeeded)
                         {
-                            var collection = await AddonsService.CreateAddonCollectionAsync(SelectedAddon.Name);
+                            var collection = await AddonsService.CreateAddonCollectionAsync(SelectedAddon.Name).ConfigureAwait(true);
                             App.PurchaseCollections.Add(collection);
                             int index = Addons.IndexOf(SelectedAddon);
                             Addons[index].IsPurchased = true;
@@ -77,6 +77,7 @@ namespace WorkUwpApp.ViewModels
                     {
                         // The in-app purchase was not completed because an error occurred.
                         Debug.WriteLine($"Purchase has failed \n{ex.Message}");
+                        throw;
                     }
                 }
             }

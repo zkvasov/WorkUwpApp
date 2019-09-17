@@ -10,7 +10,7 @@ using Windows.System.UserProfile;
 
 namespace RuntimeComponentForDesktop
 {
-    public sealed class DesktopBackgroundTask : IBackgroundTask
+    public sealed class DesktopBackgroundTask : IBackgroundTask, IDisposable
     {
 
         private const string _containerName = "imagesContainer";
@@ -20,7 +20,7 @@ namespace RuntimeComponentForDesktop
         private const string _isLaunchedKey = "IsLaunchedBg";
 
 
-        readonly CancellationTokenSource cancel = new CancellationTokenSource();
+        private readonly CancellationTokenSource cancel = new CancellationTokenSource();
         volatile bool _cancelRequested = false;   // прервана ли задача
          
         private List<StorageFile> _imageFiles;
@@ -28,6 +28,10 @@ namespace RuntimeComponentForDesktop
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
+            if (taskInstance == null)
+            {
+                throw new ArgumentNullException(nameof(taskInstance));
+            }
             Debug.WriteLine(taskInstance.Task.Name);
             //оценка стоимости выполнения задачи для приложения
             var cost = BackgroundWorkCost.CurrentBackgroundWorkCost;
@@ -37,16 +41,17 @@ namespace RuntimeComponentForDesktop
             // TODO: обрабатываем прерывание задачи
             taskInstance.Canceled += (s, e) =>
             {
+                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+                localSettings.Values[_isLaunchedKey] = false;
                 cancel.Cancel();
                 cancel.Dispose();
                 _cancelRequested = true;
-                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-                localSettings.Values[_isLaunchedKey] = false;
+
             };
 
             BackgroundTaskDeferral _deferral = taskInstance.GetDeferral();
 
-            await GetDataFromSettings();
+            await GetDataFromSettings().ConfigureAwait(true);
 
             _deferral.Complete();
         }
@@ -81,7 +86,7 @@ namespace RuntimeComponentForDesktop
                 }
 
                 localSettings.Values[_containerChangedSetting] = false;
-                await FolderHandling(_imageFiles);
+                await FolderHandling(_imageFiles).ConfigureAwait(true);
             }
         }
 
@@ -102,38 +107,6 @@ namespace RuntimeComponentForDesktop
         //}
 
 
-        //private async Task LoadBgImage()
-        //{
-        //    // получаем локальные настройки приложения
-        //    var settings = ApplicationData.Current.LocalSettings;
-        //    int seconds = (int)settings.Values["interval"];
-        //    if (seconds >= 3 && seconds <= 30)
-        //    {
-        //        _interval = seconds * 1000;
-        //    }
-        //    string accsessFolder = (string)settings.Values["storageItemAccessList"];
-
-        //    if (accsessFolder != null)
-        //    {
-        //        StorageFolder folder = await StorageApplicationPermissions.FutureAccessList.GetFolderAsync(accsessFolder);
-        //        if (folder != null)
-        //        {
-        //            _imageFiles = new List<StorageFile>();
-        //            await GetFilesInFolder(folder);
-        //            try
-        //            {
-        //                FolderHandling(_imageFiles);
-        //            }
-        //            catch (Exception e)
-        //            {
-        //                Debug.WriteLine(e.ToString());
-        //            }
-        //        }
-        //    }
-        //   //settings.Values.Remove("storageItemAccessList");
-        //   //settings.Values.Remove("interval");
-        //}
-
         private async Task FolderHandling(IReadOnlyList<StorageFile> imageFiles)
         {
             //бесконечно  как в кольцевом списке
@@ -145,39 +118,18 @@ namespace RuntimeComponentForDesktop
                     i = 0;
                 }
 
-                //SetDesktopBackground(imageFiles[i]);
-                await SetDesktopBackgroundAsync(imageFiles[i]);
-                //await Task.Delay(_interval);
+                await SetDesktopBackgroundAsync(imageFiles[i]).ConfigureAwait(false);
                 Thread.Sleep(_interval);                    //интервал между загрузкой изображений
                 i++;
                 var localSettings = ApplicationData.Current.LocalSettings;
                 bool isCollectionChanged = (bool)localSettings.Values[_containerChangedSetting];
                 if (isCollectionChanged)
                 {
-                    await GetDataFromSettings();
+                    await GetDataFromSettings().ConfigureAwait(false);
                 }
             }
         }
-
-        //private void SetDesktopBackground(StorageFile file)
-        //{
-        //    if (UserProfilePersonalizationSettings.IsSupported())
-        //    {
-
-        //        var outer = Task.Factory.StartNew(async() =>      // внешняя задача
-        //        {
-        //            StorageFile localFile = await file.CopyAsync(ApplicationData.Current.LocalFolder, file.Name,
-        //                                                                             NameCollisionOption.ReplaceExisting); 
-        //            var inner = Task.Factory.StartNew(async () =>  // вложенная задача
-        //            {
-        //                UserProfilePersonalizationSettings settings = UserProfilePersonalizationSettings.Current;
-        //                bool isSuccess = await settings.TrySetWallpaperImageAsync(localFile);
-        //            }, TaskCreationOptions.AttachedToParent);
-        //        });
-        //        outer.Wait(); // ожидаем выполнения внешней задачи
-        //    }
-        //}
-        private async Task SetDesktopBackgroundAsync(StorageFile file)
+        private static async Task SetDesktopBackgroundAsync(StorageFile file)
         {
            
             if (UserProfilePersonalizationSettings.IsSupported())
@@ -187,6 +139,11 @@ namespace RuntimeComponentForDesktop
                 UserProfilePersonalizationSettings settings = UserProfilePersonalizationSettings.Current;
                 await settings.TrySetWallpaperImageAsync(localFile);
             }
+        }
+
+        public void Dispose()
+        {
+            cancel.Dispose();
         }
     }
 }

@@ -19,15 +19,15 @@ namespace WorkUwpApp.Services
 
         public static async Task InitializeAsync()
         {
-            Theme = await LoadThemeFromSettingsAsync();
+            Theme = await LoadThemeFromSettingsAsync().ConfigureAwait(false);
         }
 
         public static async Task SetThemeAsync(ElementTheme theme)
         {
             Theme = theme;
 
-            await SetRequestedThemeAsync();
-            await SaveThemeInSettingsAsync(Theme);
+            await SetRequestedThemeAsync().ConfigureAwait(false);
+            await SaveThemeInSettingsAsync(Theme).ConfigureAwait(false);
         }
 
         public static async Task SetRequestedThemeAsync()
@@ -47,7 +47,7 @@ namespace WorkUwpApp.Services
         private static async Task<ElementTheme> LoadThemeFromSettingsAsync()
         {
             ElementTheme cacheTheme = ElementTheme.Default;
-            string themeName = await ApplicationData.Current.LocalSettings.ReadAsync<string>(SettingsKey);
+            string themeName = await ApplicationData.Current.LocalSettings.ReadAsync<string>(SettingsKey).ConfigureAwait(true);
 
             if (!string.IsNullOrEmpty(themeName))
             {
@@ -59,7 +59,7 @@ namespace WorkUwpApp.Services
 
         private static async Task SaveThemeInSettingsAsync(ElementTheme theme)
         {
-            await ApplicationData.Current.LocalSettings.SaveAsync(SettingsKey, theme.ToString());
+            await ApplicationData.Current.LocalSettings.SaveAsync(SettingsKey, theme.ToString()).ConfigureAwait(false);
         }
     }
 }

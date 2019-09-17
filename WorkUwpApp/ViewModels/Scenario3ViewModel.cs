@@ -31,7 +31,6 @@ namespace WorkUwpApp.ViewModels
         private const string _intervalSetting = "interval";
         private const string _containerChangedSetting = "containerChangedSetting";
 
-        //private LauncherBgTask _launcher;
         private ImagesCollection _selectedCollection;
         private ImagesCollection _selectedPurchCollection; 
         private ImagesCollection _selectedCustomCollection;
@@ -39,7 +38,7 @@ namespace WorkUwpApp.ViewModels
         private bool _isLoading = false;
         private ElementTheme _elementTheme = ThemeSelectorService.Theme;
 
-        //TODO: delete to solve the problem of reusability 
+        //TODO: solve the problem of reusability 
         public ObservableCollection<ImagesCollection> Collections { get; }
         public ObservableCollection<ImagesCollection> PurchasedCollections { get; }
 
@@ -63,7 +62,7 @@ namespace WorkUwpApp.ViewModels
                         async (param) =>
                         {
                             ElementTheme = param;
-                            await ThemeSelectorService.SetThemeAsync(param);
+                            await ThemeSelectorService.SetThemeAsync(param).ConfigureAwait(false);
                         });
                 }
 
@@ -74,7 +73,6 @@ namespace WorkUwpApp.ViewModels
         public Scenario3ViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
-            //_launcher = new LauncherBgTask();
             Collections = new ObservableCollection<ImagesCollection>();
             PurchasedCollections = new ObservableCollection<ImagesCollection>();
             SettingsClicked = new RelayCommand(ShowSettings);
@@ -206,7 +204,7 @@ namespace WorkUwpApp.ViewModels
                     var file = await StorageFile.GetFileFromPathAsync(filePath);
                     string fileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(file);
 
-                    localSettings.Containers[_containerName].Values[String.Format(_imageSetting + count.ToString())] = fileToken;
+                    localSettings.Containers[_containerName].Values[string.Format(_imageSetting + count.ToString())] = fileToken;
                     count++;
                 }
             }

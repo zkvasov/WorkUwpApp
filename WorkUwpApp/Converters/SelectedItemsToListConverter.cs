@@ -13,9 +13,14 @@ namespace WorkUwpApp.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var list = new List<IconImage>();
-            foreach (var item in ((parameter as ListViewBase).SelectedItems))
+            if (parameter == null)
             {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+            var list = new List<IconImage>();
+            foreach (var item in (parameter as ListViewBase).SelectedItems)
+            {
+                
                 list.Add(item as IconImage);
             }
             return list;
@@ -23,6 +28,10 @@ namespace WorkUwpApp.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
             return (parameter as ListViewBase).SelectedItems;
         }
     }
